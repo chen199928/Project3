@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Array;
@@ -12,6 +13,8 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Random;
+import java.io.File; 
+import java.io.IOException;  
 
 public class Runner {
     static final int NumRecs = 1024; // Each record holds 8 bytes. Each block has 8192 bytes
@@ -34,28 +37,32 @@ public class Runner {
         
        DataInputStream input = new DataInputStream(new BufferedInputStream(new FileInputStream("Sampledata_16blocks.bin")));
        RandomAccessFile rfile = new RandomAccessFile("Sampledata_16blocks.bin", "r"); 
+       FileWriter myWriter = new FileWriter("filename.txt");
+      
+
        //rfile.readLine();
        int pointer = 0;
 //       byte[] intarray = new byte[4];
 //       byte[] floatarray = new byte[4];
 //       rfile.seek(0);
 //       rfile.read(intarray);
-//       System.out.print(convertByteArrayToInteger(intarray) + "    ");
+//       System.out.print(convertByteArrayToInteger(intarray) + "  rfile.length() - 1  ");
        while (pointer <= rfile.length() - 1) {
            byte[] intarray = new byte[4];
            byte[] floatarray = new byte[4];
            rfile.seek(pointer);
            rfile.read(intarray);
-           System.out.print(convertByteArrayToInteger(intarray) + "    ");
+           //System.out.print();
            //break;
+           myWriter.write(convertByteArrayToInteger(intarray) + "    ");
            pointer = pointer + 4;
            rfile.seek(pointer);
            rfile.read(floatarray);
-           System.out.println(convertByteArrayToFloat(floatarray));
+           myWriter.write(String.valueOf(convertByteArrayToFloat(floatarray)) + "\n");
            pointer = pointer + 4;
        }
     
-      
+       myWriter.close();
  
     }
     public static int convertByteArrayToInteger(byte[] intBytes)
