@@ -45,7 +45,7 @@ public class Runner {
 //       byte[] intarray = new byte[4];
 //       byte[] floatarray = new byte[4];
 //       rfile.seek(0);
-//       rfile.read(intarray);
+//       rfile.read(intarray);asdasda
 //       System.out.print(convertByteArrayToInteger(intarray) + "  rfile.length() - 1  ");
        while (pointer <= rfile.length() - 1) {
            byte[] intarray = new byte[4];
