@@ -1,3 +1,4 @@
+package Project3;
 
 public class Record {
     int key;
@@ -12,7 +13,7 @@ public class Record {
         return key;
     }
     
-    public float value() {
+    public float getValue() {
         return value;
     }
 }
