@@ -1,19 +1,19 @@
 package Project3;
 
 public class MinHeapTree {
-    private float[] Heap;
+    private Record[] Heap;
     private int size;
     private int maxsize;
 
     private static final int FRONT = 1;
-    private static final int MAXSIZE = 16;
-    private static final int ARRAYSIZE = 8;
+    private static final int MAXSIZE = 16 * 1024 + 1;
+    private static final int ARRAYSIZE = 16 * 1024 + 1;
 
     public MinHeapTree() {
         this.maxsize = MAXSIZE;
         this.size = 0;
-        Heap = new float[ARRAYSIZE];
-        Heap[0] = Integer.MIN_VALUE;
+        Heap = new Record[ARRAYSIZE];
+        Heap[0] = new Record(0, 0);
     }
 
 
@@ -23,7 +23,10 @@ public class MinHeapTree {
     private int parent(int pos) {
         return pos / 2;
     }
-
+    
+    public int getSize() {
+        return size;
+    }
 
     // Function to return the position of the
     // left child for the node currently at pos
@@ -52,7 +55,7 @@ public class MinHeapTree {
 
     // Function to swap two nodes of the heap
     private void swap(int fpos, int spos) {
-        float tmp;
+        Record tmp;
         tmp = Heap[fpos];
         Heap[fpos] = Heap[spos];
         Heap[spos] = tmp;
@@ -65,12 +68,13 @@ public class MinHeapTree {
         // If the node is a non-leaf node and greater
         // than any of its child
         if (!isLeaf(pos)) {
-            if (Heap[pos] > Heap[leftChild(pos)] || Heap[pos] > Heap[rightChild(
-                pos)]) {
+            if (Heap[pos].getValue() > Heap[leftChild(pos)].getValue()
+                || Heap[pos].getValue() > Heap[rightChild(pos)].getValue()) {
 
                 // Swap with the left child and heapify
                 // the left child
-                if (Heap[leftChild(pos)] < Heap[rightChild(pos)]) {
+                if (Heap[leftChild(pos)].getValue() < Heap[rightChild(pos)]
+                    .getValue()) {
                     swap(pos, leftChild(pos));
                     minHeapify(leftChild(pos));
                 }
@@ -87,14 +91,16 @@ public class MinHeapTree {
 
 
     // Function to insert a node into the heap
-    public void insert(float element) {
+    public void insert(Record element) {
         if (size >= maxsize) {
             return;
         }
+        //System.out.println(element.getKey());;
         Heap[++size] = element;
+
         int current = size;
 
-        while (Heap[current] < Heap[parent(current)]) {
+        while (Heap[current].getValue() < Heap[parent(current)].getValue()) {
             swap(current, parent(current));
             current = parent(current);
         }
@@ -113,18 +119,30 @@ public class MinHeapTree {
     // Function to remove and return the minimum
     // element from the heap
     public float remove() {
-        float popped = Heap[FRONT];
+        float popped = Heap[FRONT].getValue();
         Heap[FRONT] = Heap[size--];
         minHeapify(FRONT);
         return popped;
+    }
+    
+    public Record[] getHeap() {
+        return Heap;
     }
 
 
     // Function to print the contents of the heap
     public void print() {
         for (int i = 1; i <= size / 2; i++) {
-            System.out.print(" PARENT : " + Heap[i] + " LEFT CHILD : " + Heap[2
-                * i] + " RIGHT CHILD :" + Heap[2 * i + 1]);
+            if (Heap[i] != null) {
+                System.out.print(" PARENT : " + Heap[i].getValue());
+            }
+            if (Heap[2 * i] != null) {
+                System.out.print(" LEFT CHILD : " + Heap[2 * i].getValue());
+            }
+            if (Heap[2 * i + 1] != null) {
+
+                System.out.print(" RIGHT CHILD :" + Heap[2 * i + 1].getValue());
+            }
             System.out.println();
         }
     }

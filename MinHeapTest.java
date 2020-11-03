@@ -1,5 +1,6 @@
 package Project3;
 
+
 import student.TestCase;
 
 /**
@@ -10,16 +11,21 @@ import student.TestCase;
  */
 public class MinHeapTest extends TestCase {
     private MinHeapTree tree;
+    private Record record;
 
     /**
      * setup
      */
     public void setUp() {
         tree = new MinHeapTree();
-        tree.insert(1);
-        tree.insert(2);
-        tree.insert(4);
-        tree.insert(3);
+        
+        tree.insert(new Record(1, 1.2f));
+        tree.insert(new Record(2, 3f));
+        tree.insert(new Record(3, 2f));
+        tree.insert(new Record(4, 0.5f));
+        tree.insert(new Record(5, 4f));
+        tree.insert(new Record(6, 5f));
+
     }
 
 
@@ -31,5 +37,9 @@ public class MinHeapTest extends TestCase {
      */
     public void testMain() {
         tree.print();
+        
+        for(int i = 1 ; i <= tree.getSize(); i ++) {
+            System.out.println("key: " + tree.getHeap()[i].getValue());
+        }
     }
 }

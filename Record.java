@@ -1,5 +1,6 @@
 package Project3;
 
+
 public class Record {
     int key;
     float value;
@@ -13,7 +14,11 @@ public class Record {
         return key;
     }
     
-    public float value() {
+    public float getValue() {
         return value;
+    }
+    
+    public int findID(float value) {
+       return key; 
     }
 }
