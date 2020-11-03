@@ -3,6 +3,7 @@
 /**
  * 
  * @author youweichen and Honghao Zhang
+ * This is the heap class.
  *
  */
 public class MinHeapTree {
