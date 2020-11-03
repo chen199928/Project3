@@ -17,7 +17,7 @@ public class MinHeapTest extends TestCase {
      * setup
      */
     public void setUp() {
-        tree = new MinHeapTree();
+        tree = new MinHeapTree(new Record[16*1024], 0, 16*1024);
         
         tree.insert(new Record(1, 1.2f));
         tree.insert(new Record(2, 3f));
@@ -36,9 +36,9 @@ public class MinHeapTest extends TestCase {
      *             throw
      */
     public void testMain() {
-        tree.print();
+        //tree.print();
         
-        for(int i = 1 ; i <= tree.getSize(); i ++) {
+        for(int i = 0 ; i < tree.getSize(); i ++) {
             System.out.println("key: " + tree.getHeap()[i].getValue());
         }
     }

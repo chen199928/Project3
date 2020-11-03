@@ -43,7 +43,7 @@ public class Externalsorting {
         FileWriter myWriter = new FileWriter(args[1]);
         ArrayList<Record> list = new ArrayList<Record>();
         Record record;
-        MinHeapTree tree = new MinHeapTree();
+        MinHeapTree tree = new MinHeapTree(new Record[16*1024], 0, 16*1024);
         // rfile.readLine();
         int pointer = 0;
         byte[] inputArray = new byte[NumRecs];   // ask if this one is right
@@ -65,7 +65,7 @@ public class Externalsorting {
             tree.insert(record);
             
         }
-           for(int i = 1 ; i <= tree.getSize(); i ++) {
+           for(int i = 0 ; i <tree.getSize(); i ++) {
                myWriter.write(tree.getHeap()[i].getKey() + "    ");
                myWriter.write(tree.getHeap()[i].getValue() + "\n");
            }

@@ -4,6 +4,7 @@ package Project3;
 public class Record {
     int key;
     float value;
+    byte[] k;
     
     public Record(int key, float value) {
         this.key = key;
