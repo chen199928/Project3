@@ -1,8 +1,5 @@
-package Project3.Project3;
 
-
-
-public class Record implements  Comparable<Record> {
+public class Record {
     int key;
     float value;
     
@@ -15,22 +12,7 @@ public class Record implements  Comparable<Record> {
         return key;
     }
     
-    public float getValue() {
+    public float value() {
         return value;
-    }
-
-    @Override
-    public int compareTo(Record o) {
-        // TODO Auto-generated method stub
-        if (this.getKey() > o.getKey()) {
-            return 1;
-        }
-        else if (this.getKey() < o.getKey()) {
-            return -1;
-        }
-        else {
-            return 0;
-        }
-
     }
 }
