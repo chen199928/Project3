@@ -1,4 +1,5 @@
-package Project3;
+package Project3.Project3;
+
 
 
 public class Record implements  Comparable<Record> {
