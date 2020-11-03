@@ -35,8 +35,8 @@ public class RunnerTest extends TestCase {
 
         args[0] = "Sampledata_16blocks.bin";
         args[1] = "filename.txt";
-        new Runner();
-        Runner.main(args);
+        new Externalsorting();
+        Externalsorting.main(args);
         String output = systemOut().getHistory();
         assertNotNull(output);
     }
