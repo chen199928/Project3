@@ -1,3 +1,5 @@
+package Project3;
+
 
 public class MinHeapTree {
     private float[] Heap; 
@@ -5,12 +7,13 @@ public class MinHeapTree {
     private int maxsize; 
   
     private static final int FRONT = 1; 
-  
-    public MinHeapTree(int maxsize) 
+    private static final int MAXSIZE = 16;
+    private static final int ARRAYSIZE = 8;
+    public MinHeapTree() 
     { 
-        this.maxsize = maxsize; 
+        this.maxsize = MAXSIZE; 
         this.size = 0; 
-        Heap = new float[this.maxsize + 1]; 
+        Heap = new float[ARRAYSIZE]; 
         Heap[0] = Integer.MIN_VALUE; 
     } 
   
