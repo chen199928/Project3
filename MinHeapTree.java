@@ -1,149 +1,152 @@
 package Project3;
 
 public class MinHeapTree {
-    private Record[] Heap;
-    private int size;
-    private int maxsize;
+    private Record[] Heap; // Pointer to the heap array
+    private int size; // Maximum size of the heap
+    private int n; // Number of things now in heap
 
-    private static final int FRONT = 1;
-    private static final int MAXSIZE = 16 * 1024 + 1;
-    private static final int ARRAYSIZE = 16 * 1024 + 1;
-
-    public MinHeapTree() {
-        this.maxsize = MAXSIZE;
-        this.size = 0;
-        Heap = new Record[ARRAYSIZE];
-        Heap[0] = new Record(0, 0);
+    // Constructor supporting preloading of heap contents
+    public MinHeapTree(Record[] h, int num, int max) {
+        Heap = h;
+        n = num;
+        size = max;
+        buildheap();
     }
 
 
-    // Function to return the position of
-    // the parent for the node currently
-    // at pos
-    private int parent(int pos) {
-        return pos / 2;
-    }
-    
-    public int getSize() {
-        return size;
-    }
-
-    // Function to return the position of the
-    // left child for the node currently at pos
-    private int leftChild(int pos) {
-        return (2 * pos);
+    // Return current size of the heap
+    public int heapsize() {
+        return n;
     }
 
 
-    // Function to return the position of
-    // the right child for the node currently
-    // at pos
-    private int rightChild(int pos) {
-        return (2 * pos) + 1;
+    // Return true if pos a leaf position, false otherwise
+    public boolean isLeaf(int pos) {
+        return (pos >= n / 2) && (pos < n);
     }
 
 
-    // Function that returns true if the passed
-    // node is a leaf node
-    private boolean isLeaf(int pos) {
-        if (pos >= (size / 2) && pos <= size) {
-            return true;
+    // Return position for left child of pos
+    public int leftchild(int pos) {
+        if (pos >= n / 2)
+            return -1;
+        return 2 * pos + 1;
+    }
+
+
+    // Return position for right child of pos
+    public int rightchild(int pos) {
+        if (pos >= (n - 1) / 2)
+            return -1;
+        return 2 * pos + 2;
+    }
+
+
+    // Return position for parent
+    public int parent(int pos) {
+        if (pos <= 0)
+            return -1;
+        return (pos - 1) / 2;
+    }
+
+
+    // Insert val into heap
+    public void insert(Record key) {
+        if (n >= size) {
+            System.out.println("Heap is full");
+            return;
         }
-        return false;
+        int curr = n++;
+        Heap[curr] = key; // Start at end of heap
+        // Now sift up until curr's parent's key > curr's key
+        while ((curr != 0) && (Heap[curr].getValue() < Heap[parent(curr)].getValue())) {
+            swap( curr, parent(curr));
+            curr = parent(curr);
+        }
     }
 
 
-    // Function to swap two nodes of the heap
-    private void swap(int fpos, int spos) {
+    // Heapify contents of Heap
+    public void buildheap() {
+        for (int i = n / 2 - 1; i >= 0; i--)
+            siftdown(i);
+    }
+
+
+    // Put element in its correct place
+    public void siftdown(int pos) {
+        if ((pos < 0) || (pos >= n))
+            return; // Illegal position
+        while (!isLeaf(pos)) {
+            int j = leftchild(pos);
+            if ((j < (n - 1)) && (Heap[j].getValue() > Heap[j + 1].getValue()))
+                j++; // j is now index of child with greater value
+            if (Heap[pos].getValue() <= Heap[j].getValue())
+            {
+                return;
+            }
+            swap( pos, j);
+            pos = j; // Move down
+        }
+    }
+
+
+    // Remove and return minimum value
+    public Record removemin() {
+        if (n == 0)
+            return null; // Removing from empty heap
+        swap( 0, --n); // Swap maximum with last value
+        if (n != 0) // Not on last element
+            siftdown(0); // Put new heap root val in correct place
+        return Heap[n];
+    }
+
+
+    public void swap( int fpos, int spos) {
         Record tmp;
         tmp = Heap[fpos];
         Heap[fpos] = Heap[spos];
         Heap[spos] = tmp;
     }
-
-
-    // Function to heapify the node at pos
-    private void minHeapify(int pos) {
-
-        // If the node is a non-leaf node and greater
-        // than any of its child
-        if (!isLeaf(pos)) {
-            if (Heap[pos].getValue() > Heap[leftChild(pos)].getValue()
-                || Heap[pos].getValue() > Heap[rightChild(pos)].getValue()) {
-
-                // Swap with the left child and heapify
-                // the left child
-                if (Heap[leftChild(pos)].getValue() < Heap[rightChild(pos)]
-                    .getValue()) {
-                    swap(pos, leftChild(pos));
-                    minHeapify(leftChild(pos));
-                }
-
-                // Swap with the right child and heapify
-                // the right child
-                else {
-                    swap(pos, rightChild(pos));
-                    minHeapify(rightChild(pos));
-                }
+    // Remove and return element at specified position
+    public Record remove(int pos) {
+        if ((pos < 0) || (pos >= n))
+            return null; // Illegal heap position
+        if (pos == (n - 1))
+            n--; // Last element, no work to be done
+        else {
+            swap( pos, --n); // Swap with last value
+            // If we just swapped in a big value, push it up
+            while ((pos > 0) && (Heap[pos].getValue() < Heap[parent(pos)].getValue())) {
+                swap( pos, parent(pos));
+                pos = parent(pos);
             }
+            if (n != 0)
+                siftdown(pos); // If it is little, push down
         }
-    }
-
-
-    // Function to insert a node into the heap
-    public void insert(Record element) {
-        if (size >= maxsize) {
-            return;
-        }
-        //System.out.println(element.getKey());;
-        Heap[++size] = element;
-
-        int current = size;
-
-        while (Heap[current].getValue() < Heap[parent(current)].getValue()) {
-            swap(current, parent(current));
-            current = parent(current);
-        }
-    }
-
-
-    // Function to build the min heap using
-    // the minHeapify
-    public void minHeap() {
-        for (int pos = (size / 2); pos >= 1; pos--) {
-            minHeapify(pos);
-        }
-    }
-
-
-    // Function to remove and return the minimum
-    // element from the heap
-    public float remove() {
-        float popped = Heap[FRONT].getValue();
-        Heap[FRONT] = Heap[size--];
-        minHeapify(FRONT);
-        return popped;
+        return Heap[n];
     }
     
-    public Record[] getHeap() {
-        return Heap;
-    }
-
-
-    // Function to print the contents of the heap
+    
     public void print() {
         for (int i = 1; i <= size / 2; i++) {
             if (Heap[i] != null) {
                 System.out.print(" PARENT : " + Heap[i].getValue());
             }
-            if (Heap[2 * i] != null) {
-                System.out.print(" LEFT CHILD : " + Heap[2 * i].getValue());
-            }
             if (Heap[2 * i + 1] != null) {
+                System.out.print(" LEFT CHILD : " + Heap[2 * i  + 1].getValue());
+            }
+            if (Heap[2 * i + 2] != null) {
 
-                System.out.print(" RIGHT CHILD :" + Heap[2 * i + 1].getValue());
+                System.out.print(" RIGHT CHILD :" + Heap[2 * i + 2].getValue());
             }
             System.out.println();
         }
+    }
+    public Record[] getHeap() {
+        return Heap;
+    }
+    public int getSize() {
+        return n;
     }
 }
