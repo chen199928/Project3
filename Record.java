@@ -1,3 +1,4 @@
+
 import java.nio.ByteBuffer;
 
 public class Record implements Comparable<Record>{
@@ -14,6 +15,7 @@ public class Record implements Comparable<Record>{
         k = null;
     }
     public Record(byte[] record) {
+        k = record;
         ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.put(record);
         buffer.flip();
@@ -44,5 +46,9 @@ public class Record implements Comparable<Record>{
         else {
             return 1;
         }
+    }
+    
+    public byte[] getTotal() {
+        return k;
     }
 }

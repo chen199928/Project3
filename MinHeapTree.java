@@ -1,14 +1,12 @@
-package Project3;
-
 public class MinHeapTree {
     private Record[] Heap; // Pointer to the heap array
     private int size; // Maximum size of the heap
     private int n; // Number of things now in heap
 
     // Constructor supporting preloading of heap contents
-    public MinHeapTree(Record[] h, int num, int max) {
-        Heap = h;
-        n = num;
+    public MinHeapTree(int max) {
+        Heap = new Record[max];
+        n = 0;
         size = max;
         buildheap();
     }
@@ -148,5 +146,33 @@ public class MinHeapTree {
     }
     public int getSize() {
         return n;
+    }
+    
+    //new added method
+    public void setMin(Record newMin) {
+        Heap[0] = newMin;
+    }
+    
+    public void setHidden(int numHidden) {
+        for (int i = 0; i < numHidden; i++) {
+            insert(Heap[(size - numHidden) + i]);
+        }
+    }
+    
+    public boolean removeMin() {
+        swap(0, --n); // Swap minimum with last value
+        siftdown(0);   // Put new heap root val in correct place
+        return (n == 0);
+    }
+    
+    public Record getMin() {
+        if (n == 0) {
+            return null;
+        }
+        return Heap[0];
+    }
+    
+    public void setHeapSize(int s) {
+        n = s;
     }
 }

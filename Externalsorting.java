@@ -37,13 +37,15 @@ public class Externalsorting {
 
     public static void main(String[] args) throws IOException {
 
-        DataInputStream input = new DataInputStream(new BufferedInputStream(
+       DataInputStream input = new DataInputStream(new BufferedInputStream(
             new FileInputStream(args[0])));
-        RandomAccessFile rfile = new RandomAccessFile(args[0], "r");
-        FileWriter myWriter = new FileWriter(args[1]);
+        File inputFile = new File(args[0]);
+        RandomAccessFile rfile = new RandomAccessFile(inputFile, "r");
+        File outputFile = new File(args[1]);
+        FileWriter myWriter = new FileWriter(outputFile);
         ArrayList<Record> list = new ArrayList<Record>();
         Record record;
-        MinHeapTree tree = new MinHeapTree();
+        MinHeapTree tree = new MinHeapTree(1024*16);
         // rfile.readLine();
         int pointer = 0;
         byte[] inputArray = new byte[NumRecs];   // ask if this one is right
@@ -57,27 +59,29 @@ public class Externalsorting {
             pointer = pointer + 8;
 
             record = new Record(recordByte);
-            System.out.println(record.getValue());
+           // System.out.println(record.getValue());
         
             tree.insert(record);
             
         }
+        System.out.println("1111111");
+        ArrayList<Integer> runLengths = 
+            ReplacementSelection.replacementSelectionSort(inputFile, outputFile);
         
-        System.out.println(rfile.length());
         //to check the size of the file.
-        int check = (int)(rfile.length() / 8192);
-        System.out.println(check);
-        if (check <= 16) {
-            //if it is less than 16 blocks, then no need to start replacement selection process.
-            for(int i = 0 ; i <tree.getSize(); i ++) {
-                myWriter.write(tree.getHeap()[i].getKey() + "    ");
-                myWriter.write(tree.getHeap()[i].getValue() + "\n");
-            }
-        }
-        else {
-            //start the replacement selection process.
-        }
-         
+//        int check = (int)(rfile.length() / 8192);
+//        
+//        if (check <= 16) {
+//            //if it is less than 16 blocks, then no need to start replacement selection process.
+//            for(int i = 0 ; i <tree.getSize(); i ++) {
+//                myWriter.write(tree.getHeap()[i].getKey() + "    ");
+//                myWriter.write(tree.getHeap()[i].getValue() + "\n");
+//            }
+//        }
+//        else {
+//            //start the replacement selection process.
+//        }
+//         
    
          
         myWriter.close();
