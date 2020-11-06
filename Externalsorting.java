@@ -1,4 +1,4 @@
-package Project3;
+
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -43,49 +43,45 @@ public class Externalsorting {
         FileWriter myWriter = new FileWriter(args[1]);
         ArrayList<Record> list = new ArrayList<Record>();
         Record record;
-        MinHeapTree tree = new MinHeapTree(new Record[16*1024], 0, 16*1024);
+        MinHeapTree tree = new MinHeapTree();
         // rfile.readLine();
         int pointer = 0;
         byte[] inputArray = new byte[NumRecs];   // ask if this one is right
         byte[] outputArray = new byte[NumRecs];  // ask if this one is right
+      
+        
         while (pointer <= rfile.length() - 1) {
-            byte[] intarray = new byte[4];
-            byte[] floatarray = new byte[4];
+           byte[] recordByte = new byte[8];
             rfile.seek(pointer);
-            rfile.read(intarray);
-            // System.out.print();
-            // break; 
-            pointer = pointer + 4;
-            rfile.seek(pointer);
-            rfile.read(floatarray);
-            pointer = pointer + 4;
-            record = new Record(convertByteArrayToInteger(intarray),
-                convertByteArrayToFloat(floatarray));
-            
+            rfile.read(recordByte);
+            pointer = pointer + 8;
+
+            record = new Record(recordByte);
+            System.out.println(record.getValue());
+        
             tree.insert(record);
             
         }
-           for(int i = 0 ; i <tree.getSize(); i ++) {
-               myWriter.write(tree.getHeap()[i].getKey() + "    ");
-               myWriter.write(tree.getHeap()[i].getValue() + "\n");
-           }
+        
+        System.out.println(rfile.length());
+        //to check the size of the file.
+        int check = (int)(rfile.length() / 8192);
+        System.out.println(check);
+        if (check <= 16) {
+            //if it is less than 16 blocks, then no need to start replacement selection process.
+            for(int i = 0 ; i <tree.getSize(); i ++) {
+                myWriter.write(tree.getHeap()[i].getKey() + "    ");
+                myWriter.write(tree.getHeap()[i].getValue() + "\n");
+            }
+        }
+        else {
+            //start the replacement selection process.
+        }
+         
+   
+         
         myWriter.close();
 
     }
 
-
-    public static int convertByteArrayToInteger(byte[] intBytes) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(Integer.BYTES);
-        byteBuffer.put(intBytes);
-        byteBuffer.flip();
-        return byteBuffer.getInt();
-    }
-
-
-    public static float convertByteArrayToFloat(byte[] floatBytes) {
-        ByteBuffer byteBuffer = ByteBuffer.allocate(Float.BYTES);
-        byteBuffer.put(floatBytes);
-        byteBuffer.flip();
-        return byteBuffer.getFloat();
-    }
 }
