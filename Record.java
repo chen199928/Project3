@@ -5,7 +5,7 @@ public class Record implements Comparable<Record>{
     int key;
     float value;
     byte[] k;
-    
+    int runNum;
     /**
      * for the first initialization in the tree.
      */
@@ -14,6 +14,8 @@ public class Record implements Comparable<Record>{
         value = 0;
         k = null;
     }
+    
+    
     public Record(byte[] record) {
         k = record;
         ByteBuffer buffer = ByteBuffer.allocate(8);
@@ -21,8 +23,23 @@ public class Record implements Comparable<Record>{
         buffer.flip();
         this.key = buffer.getInt();
         this.value = buffer.getFloat();
+        runNum = 0;
     }
     
+    
+    public Record(byte[] record, int num) {
+        k = record;
+        ByteBuffer buffer = ByteBuffer.allocate(8);
+        buffer.put(record);
+        buffer.flip();
+        this.key = buffer.getInt();
+        this.value = buffer.getFloat();
+        runNum = num;
+    }
+    
+    public int getRunNum() {
+        return runNum;
+    }
     public int getKey() {
         return key;
     }
@@ -37,10 +54,10 @@ public class Record implements Comparable<Record>{
     @Override
     public int compareTo(Record o) {
         // TODO Auto-generated method stub
-        if (key - o.getKey() < 0) {
+        if (value - o.getValue() < 0) {
             return -1;
         }
-        else if (key == o.getKey()) {
+        else if (value == o.getValue()) {
             return 0;
         }
         else {
@@ -50,5 +67,9 @@ public class Record implements Comparable<Record>{
     
     public byte[] getTotal() {
         return k;
+    }
+    
+    public String toString() {
+        return this.getKey() + "     " + this.getValue();
     }
 }

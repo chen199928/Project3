@@ -1,4 +1,5 @@
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -21,46 +22,65 @@ public class ReplacementSelection {
             File given, File sorted) throws IOException {
             RandomAccessFile read = new RandomAccessFile(given, "r");
             RandomAccessFile write = new RandomAccessFile(sorted, "rw");
-            MinHeapTree heap = new MinHeapTree(16*1024);
+            FileWriter write2 = new FileWriter("FileOutput.txt");
+            MinHeapTree<Record> heap = new MinHeapTree<Record>(16*1024);
             ArrayList<Integer> runSizes = new ArrayList<Integer>();
             int currRunSize = 0;
             fillHeap(heap, read);
-            Record[] inputBuffer = makeInput(read);
+            RandomAccessFile read2 = new RandomAccessFile(given, "r");
+            Record[] inputBuffer = makeInput(read2);
             Record[] outputBuffer = new Record[1024];
             
-            System.out.println(inputBuffer == null);
-            while (inputBuffer != null) {
-                System.out.println("222222");
-                for (int i = 0; i < 1024; i++) {
-                    Record out = heap.getMin();
-                    outputBuffer[i] = out;
-                    currRunSize++;
-                    Record in = inputBuffer[i];
-                    heap.setMin(in);
-                    if (in.compareTo(out) >= 0) {
-                        heap.siftdown(0);
-                    }
-                    else {
-                        boolean result = heap.removeMin();
-                        if (result) {
-                            runSizes.add(Integer.valueOf(currRunSize));
-                            currRunSize = 0;
-                            heap.setHeapSize(1024*16);
-                            heap.buildheap();
+            int check = (int)(read.length() / 8192);
+           
+            if (check <= 16) {
+                ArrayList<String> list = heap.print();
+                
+                for (int i = 0; i < list.size(); i++) {
+                    // write.write(outputBuffer[i].getValue());
+                   // System.out.println(heap.print().get(i));
+                    String result = String.valueOf(list.get(i));
+                    write2.write(result + "\n");
+                    //System.out.println(outputBuffer[i].getValue());
+                 }
+            }
+            else {
+                while (inputBuffer != null) {
+                    System.out.println("222222");
+                    for (int i = 0; i < 1024; i++) {
+                        Record out = heap.getMin();
+                        outputBuffer[i] = out;
+                        currRunSize++;
+                        Record in = inputBuffer[i];
+                        heap.setMin(in);
+                        if (in.compareTo(out) >= 0) {
+                            heap.siftdown(0);
+                        }
+                        else {
+                            boolean result = heap.removeMin();
+                            if (result) {
+                                runSizes.add(Integer.valueOf(currRunSize));
+                                currRunSize = 0;
+                                heap.setHeapSize(1024*16);
+                                heap.buildheap();
+                            }
                         }
                     }
+                  
+                    for (int i = 0; i < 1024; i++) {
+                       // write.write(outputBuffer[i].getValue());
+                       String result = String.valueOf(outputBuffer[i].getKey() + "   "+ outputBuffer[i].getValue());
+                       write2.write(result + "\n");
+                       System.out.println(outputBuffer[i].getValue());
+                    }
+                    inputBuffer = makeInput(read2);
                 }
-              
-                for (int i = 0; i < 1024; i++) {
-                   // write.write(outputBuffer[i].getValue());
-                   write.writeFloat(outputBuffer[i].getValue());
-                   System.out.println(outputBuffer[i].getValue());
-                }
-                inputBuffer = makeInput(read);
             }
+            
             clearHeap(heap, runSizes, currRunSize, write);
             read.close();
             write.close();
+            write2.close();
            // given.delete();
             return runSizes;
         }
@@ -82,7 +102,7 @@ public class ReplacementSelection {
             for (int j = 0; j < 16; j++) {
                 Record[] outputBuffer = new Record[1024];
                 for (int i = 0; i < 1024; i++) {
-                    Record out = heap.getMin();
+                    Record out = (Record)heap.getMin();
                     if (out != null) {
                         outputBuffer[i] = out;
                         currRunSize++;
@@ -154,9 +174,17 @@ public class ReplacementSelection {
          * @param read from file
          * @throws IOException
          */
-        private static void fillHeap(MinHeapTree heap, 
+        private static void fillHeap(MinHeapTree<Record> heap, 
             RandomAccessFile read) throws IOException {
-            for (int j = 0; j < 16; j++) {
+            int max;
+            int check = (int)(read.length() / 8192);
+            if (check <= 16) {
+                max = check;
+            }
+            else {
+                max = 16;
+            }
+            for (int j = 0; j < max; j++) {
                 Record[] input = makeInput(read);
                 for (int i = 0; i < 1024; i++) {
                     heap.insert(input[i]);
