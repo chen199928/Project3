@@ -1,5 +1,6 @@
 package Project3;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -29,17 +30,24 @@ public class MergeSort {
         int numRunsCompleted = 0;
         RandomAccessFile read = new RandomAccessFile(readFrom, "r");
         RandomAccessFile write = new RandomAccessFile(writeTo, "rw");
+        FileWriter write2 = new FileWriter("a.txt");
         int[] offsets = new int[runSizes.size()];
         int counter = 0;
         for (int i = 0; i < runSizes.size(); i++) {
             offsets[i] = counter;
             counter += runSizes.get(i);
+            //System.out.println("runsize: " + runSizes.get(i));
         }
         ArrayList<Integer> newRuns = new ArrayList<Integer>();
-        System.out.println(runSizes);
         while (numRunsCompleted < runSizes.size()) {
-            int thisNumRuns = (numRunsCompleted + 8 <= runSizes.size()) 
-                ? 8 : (runSizes.size() % 8);
+            int thisNumRuns;
+            if(numRunsCompleted + 4 <= runSizes.size()) {
+                 thisNumRuns = 4;
+            }
+            else {
+                 thisNumRuns = runSizes.size() % 4;
+            }
+
             int[] numInHeap = new int[thisNumRuns];
             int[] numInOut = new int[thisNumRuns];
             int[] theseOffsets = new int[thisNumRuns];
@@ -51,11 +59,19 @@ public class MergeSort {
                 numInRuns[i] = 0;
             }
             currRunSize = 0;
+            System.out.println("thisNumRuns: " + thisNumRuns);
             for (int i = 0; i < thisNumRuns; i++) {
+                int numInBlock;
                 int numInRun = runSizes.get(numRunsCompleted + i).intValue();
                 numInRuns[i] = numInRun;
-                int numInBlock = (numInRun >= 1024) ? 1024 : numInRun;
+                if(numInRun >= 1024) {
+                    numInBlock = 1024;
+                }
+                else {
+                    numInBlock = numInRun;
+                }
                 Record[] thisRun = new Record[numInBlock];
+                //System.out.println("numInBlock:  " + numInBlock);
                 byte[] bArray = new byte[numInBlock * 8];
                 read.seek(theseOffsets[i] * 8);
                 read.read(bArray);
@@ -65,6 +81,7 @@ public class MergeSort {
                         arr[k] = bArray[(j * 8) + k];
                     }
                     thisRun[j] = new Record(arr, i);
+                    //System.out.println("run: " + thisRun[j].getValue());
                 }
                 for (int j = 0; j < numInBlock; j++) {
                     heap.insert(thisRun[j]);
@@ -75,27 +92,37 @@ public class MergeSort {
             newRuns.add(Integer.valueOf(currRunSize));
             Record[] outputBuffer = new Record[1024];
             int idx = 0;
+            int z = 0;
             while (heap.heapsize() > 0) {
                 Record min = heap.getMin();
                 heap.removeMin();
                 outputBuffer[idx] = min;
+                
                 if (idx == 1023) {
+                    System.out.println("here" + Integer.toString(z++));
                     idx = 0;
                     for (int i = 0; i < 1024; i++) {
                         write.write(outputBuffer[i].getTotal());
+                        write2.write( String.valueOf(outputBuffer[i].getValue()) + "\n");
+                        //System.out.println(outputBuffer[i].getValue());
+                       
                     }
                 }
                 else {
                     idx++;
                 }
                 int thisMinRun = min.getRunNum();
+                int numInBlock;
                 numInHeap[thisMinRun] -= 1;
                 numInOut[thisMinRun] += 1;
                 if (numInHeap[thisMinRun] == 0 
                     && numInOut[thisMinRun] < numInRuns[thisMinRun]) {
-                    int numInBlock = (numInRuns[thisMinRun] 
-                        - numInOut[thisMinRun] >= 1024) 
-                        ? 1024 : numInRuns[thisMinRun] - numInOut[thisMinRun];
+                    if(numInRuns[thisMinRun] 
+                        - numInOut[thisMinRun] >= 1024) {
+                        numInBlock = 1024;
+                    } else {
+                        numInBlock = numInRuns[thisMinRun] - numInOut[thisMinRun];
+                    }
                     Record[] thisRun = new Record[numInBlock];
                     byte[] bArray = new byte[numInBlock * 8];
                     read.seek(
@@ -108,6 +135,7 @@ public class MergeSort {
                             arr[k] = bArray[(j * 8) + k];
                         }
                         thisRun[j] = new Record(arr, thisMinRun);
+                        System.out.println(thisRun[j].getValue());
                     }
                     for (int j = 0; j < numInBlock; j++) {
                         heap.insert(thisRun[j]);
@@ -116,8 +144,11 @@ public class MergeSort {
                 }
             }
             if (idx != 0) {
+                System.out.println("maybe?");
                 for (int i = 0; i < idx; i++) {
                     write.write(outputBuffer[i].getTotal());
+                    //System.out.println("idx: " + outputBuffer[i].getValue());
+                    
                 }
             }
             numRunsCompleted += thisNumRuns;
@@ -128,6 +159,7 @@ public class MergeSort {
         readFrom.delete();
   
         if (runSizes.size() > 1) {
+            //System.out.println("runSize: " + runSizes.size());
             return multiwayMerge(writeTo, readFrom, runSizes);
         }
         else {

@@ -23,20 +23,20 @@ public class ReplacementSelection {
             File given, File sorted) throws IOException {
             RandomAccessFile read = new RandomAccessFile(given, "r");
             RandomAccessFile write = new RandomAccessFile(sorted, "rw");
+
             FileWriter write2 = new FileWriter("FileOutput.txt");
             MinHeapTree<Record> heap = new MinHeapTree<Record>(16*1024);
             ArrayList<Integer> runSizes = new ArrayList<Integer>();
             int currRunSize = 0;
             fillHeap(heap, read);
-            RandomAccessFile read2 = new RandomAccessFile(given, "r");
-            Record[] inputBuffer = makeInput(read2);
-            Record[] outputBuffer = new Record[1024];
+            //RandomAccessFile read2 = new RandomAccessFile(given, "r");
+
             int lineNum = 0;
-            int check = (int)(read.length() / 8192);
-           
+            int check = (int)(read.length() / (1024 * 8));
+            Record[] inputBuffer = makeInput(read);
+            Record[] outputBuffer = new Record[1024];
             if (check <= 16) {
                 ArrayList<String> list = heap.print();
-                
                 for (int i = 0; i < list.size(); i++) {
                     // write.write(outputBuffer[i].getValue());
                     
@@ -45,6 +45,7 @@ public class ReplacementSelection {
                     //System.out.println(outputBuffer[i].getValue());
                  }
             }
+            
             else {
                 while (inputBuffer != null) {
                     for (int i = 0; i < 1024; i++) {
@@ -70,21 +71,20 @@ public class ReplacementSelection {
                   
                     for (int i = 0; i < 1024; i++) {
                        // write.write(outputBuffer[i].getValue());
-  
                        String result = String.valueOf(outputBuffer[i].getKey() + "   "+ outputBuffer[i].getValue());
                        write2.write(result + "\n");
                        //System.out.println(outputBuffer[i].getValue());
                     }
-                    inputBuffer = makeInput(read2);
+                    inputBuffer = makeInput(read);
                 }
             }
             
-            clearHeap(heap, runSizes, currRunSize, write);
+            clearHeap(heap, runSizes, currRunSize, write, write2);
             read.close();
             write.close();
             write2.close();
             given.delete();
-            //System.out.println(runSizes);
+           
             return runSizes;
         }
         
@@ -100,7 +100,7 @@ public class ReplacementSelection {
         private static void clearHeap(MinHeapTree heap, 
             ArrayList<Integer> runSizes, 
             int currRunSize, 
-            RandomAccessFile write) throws IOException {
+            RandomAccessFile write, FileWriter w2) throws IOException {
             int hidden = 1024*16 - heap.heapsize();
             for (int j = 0; j < 16; j++) {
                 Record[] outputBuffer = new Record[1024];
@@ -121,6 +121,8 @@ public class ReplacementSelection {
                 for (int i = 0; i < 1024; i++) {
                     Record r = outputBuffer[i];
                     write.write(r.getTotal());
+                    String result = String.valueOf(outputBuffer[i].getKey() + "   "+ outputBuffer[i].getValue());
+                    w2.write(result + "\n");
                 }
             }
             runSizes.add(Integer.valueOf(currRunSize));
@@ -138,9 +140,7 @@ public class ReplacementSelection {
             Record[] input = new Record[1024];
             byte[] bArray = new byte[8192];
             int numPut = read.read(bArray);
-            
             if (numPut != -1) {
-             
                 for (int i = 0; i < 1024; i++) {
                     Record result = nextRecord(bArray, i * 8);
                     input[i] = result;

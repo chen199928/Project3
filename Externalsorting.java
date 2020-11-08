@@ -45,10 +45,15 @@ public class Externalsorting {
             new FileInputStream(args[0])));
         File inputFile = new File(args[0]);
         RandomAccessFile rfile = new RandomAccessFile(inputFile, "r");
+        System.out.println("rfile: " + rfile.length());
         File outputFile = new File(args[1]);
+        //RandomAccessFile output = new RandomAccessFile(args[1], "w");
         FileWriter myWriter = new FileWriter(outputFile);
         ArrayList<Record> list = new ArrayList<Record>();
         Record record;
+        
+        
+        
         MinHeapTree tree = new MinHeapTree(1024*16);
         // rfile.readLine();
         int pointer = 0;
@@ -63,29 +68,20 @@ public class Externalsorting {
             pointer = pointer + 8;
 
             record = new Record(recordByte);
-           // System.out.println(record.getValue());
+            //System.out.println(record.getValue());
         
             tree.insert(record);
             
         }
+        File out = new File("x.bin");
+        System.out.println(out.length());
         ArrayList<Integer> runLengths = 
             ReplacementSelection.replacementSelectionSort(inputFile, outputFile);
-        File result = MergeSort.multiwayMerge(outputFile, inputFile, runLengths);
+        File result = MergeSort.multiwayMerge(outputFile, out, runLengths);
         resultsPrint(result);
-//        
-//        if (check <= 16) {
-//            //if it is less than 16 blocks, then no need to start replacement selection process.
-//            for(int i = 0 ; i <tree.getSize(); i ++) {
-//                myWriter.write(tree.getHeap()[i].getKey() + "    ");
-//                myWriter.write(tree.getHeap()[i].getValue() + "\n");
-//            }
-//        }
-//        else {
-//            //start the replacement selection process.
-//        }
-//         
-   
          
+   
+        out.delete();
         myWriter.close();
 
     }
@@ -101,6 +97,7 @@ public class Externalsorting {
         RandomAccessFile raf = new RandomAccessFile(results, "r");
         int numRecs = ((int)raf.length()) / 8;
         int numBlocks = numRecs / 1024;
+        System.out.println("numblock: " + numRecs);
         if (numRecs % 1024 != 0) {
             numBlocks++;
         }
