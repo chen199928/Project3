@@ -1,3 +1,4 @@
+package Project3;
 import java.util.ArrayList;
 
 public class MinHeapTree<T extends Comparable<T>> {
@@ -98,7 +99,6 @@ public class MinHeapTree<T extends Comparable<T>> {
          */
         public void insert(T key) {
             if (n >= size) {
-                System.out.println("Heap is full");
                 return;
             }
             int curr = n++;

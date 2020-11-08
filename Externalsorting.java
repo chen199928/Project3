@@ -1,11 +1,14 @@
+package Project3;
 
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -15,6 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.Scanner;
 import java.io.File;
 import java.io.IOException;
 
@@ -64,12 +68,10 @@ public class Externalsorting {
             tree.insert(record);
             
         }
-        System.out.println("1111111");
         ArrayList<Integer> runLengths = 
             ReplacementSelection.replacementSelectionSort(inputFile, outputFile);
-        
-        //to check the size of the file.
-//        int check = (int)(rfile.length() / 8192);
+        File result = MergeSort.multiwayMerge(outputFile, inputFile, runLengths);
+        resultsPrint(result);
 //        
 //        if (check <= 16) {
 //            //if it is less than 16 blocks, then no need to start replacement selection process.
@@ -86,6 +88,35 @@ public class Externalsorting {
          
         myWriter.close();
 
+    }
+    private static Record nextRecord(RandomAccessFile raf) throws IOException {
+        byte[] arr = new byte[8];
+        int numPut = raf.read(arr);
+        if (numPut == -1) {
+            return null;
+        }
+        return new Record(arr);
+    }
+    private static void resultsPrint(File results) throws IOException {
+        RandomAccessFile raf = new RandomAccessFile(results, "r");
+        int numRecs = ((int)raf.length()) / 8;
+        int numBlocks = numRecs / 1024;
+        if (numRecs % 1024 != 0) {
+            numBlocks++;
+        }
+        for (int i = 0; i < numBlocks; i++) {
+            raf.seek(i * 8192);
+            Record here = nextRecord(raf);
+            System.out.print(Integer.toString(here.getKey()) 
+                + " " + Float.toString(here.getValue()));
+            if ((i + 1 ) % 4 == 0) {
+                System.out.print("\n");
+            }
+            else {
+                System.out.print(", ");
+            }
+        }
+        raf.close();
     }
 
 }

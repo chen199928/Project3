@@ -1,3 +1,4 @@
+package Project3;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -30,7 +31,7 @@ public class ReplacementSelection {
             RandomAccessFile read2 = new RandomAccessFile(given, "r");
             Record[] inputBuffer = makeInput(read2);
             Record[] outputBuffer = new Record[1024];
-            
+            int lineNum = 0;
             int check = (int)(read.length() / 8192);
            
             if (check <= 16) {
@@ -38,7 +39,7 @@ public class ReplacementSelection {
                 
                 for (int i = 0; i < list.size(); i++) {
                     // write.write(outputBuffer[i].getValue());
-                   // System.out.println(heap.print().get(i));
+                    
                     String result = String.valueOf(list.get(i));
                     write2.write(result + "\n");
                     //System.out.println(outputBuffer[i].getValue());
@@ -46,7 +47,6 @@ public class ReplacementSelection {
             }
             else {
                 while (inputBuffer != null) {
-                    System.out.println("222222");
                     for (int i = 0; i < 1024; i++) {
                         Record out = heap.getMin();
                         outputBuffer[i] = out;
@@ -59,6 +59,7 @@ public class ReplacementSelection {
                         else {
                             boolean result = heap.removeMin();
                             if (result) {
+                                //System.out.println("curr: " + currRunSize);
                                 runSizes.add(Integer.valueOf(currRunSize));
                                 currRunSize = 0;
                                 heap.setHeapSize(1024*16);
@@ -69,9 +70,10 @@ public class ReplacementSelection {
                   
                     for (int i = 0; i < 1024; i++) {
                        // write.write(outputBuffer[i].getValue());
+  
                        String result = String.valueOf(outputBuffer[i].getKey() + "   "+ outputBuffer[i].getValue());
                        write2.write(result + "\n");
-                       System.out.println(outputBuffer[i].getValue());
+                       //System.out.println(outputBuffer[i].getValue());
                     }
                     inputBuffer = makeInput(read2);
                 }
@@ -81,7 +83,8 @@ public class ReplacementSelection {
             read.close();
             write.close();
             write2.close();
-           // given.delete();
+            given.delete();
+            //System.out.println(runSizes);
             return runSizes;
         }
         
@@ -191,6 +194,7 @@ public class ReplacementSelection {
                 }
             }
         }
+
         
 }
 
