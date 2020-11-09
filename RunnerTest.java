@@ -34,8 +34,8 @@ public class RunnerTest extends TestCase {
      */
     public void testMain() throws IOException {
 
-        args[0] = "Sampledata__32blocks.bin";
-        args[1] = "filename.txt";
+        args[0] = "Sampledata_128blocks.bin";
+        args[1] = "filename.bin";
         new Externalsorting();
         Externalsorting.main(args);
         String output = systemOut().getHistory();

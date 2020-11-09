@@ -7,9 +7,7 @@ public class Record implements Comparable<Record>{
     float value;
     byte[] k;
     int runNum;
-    /**
-     * for the first initialization in the tree.
-     */
+
     public Record() {
         key = 0;
         value = 0;
@@ -52,6 +50,7 @@ public class Record implements Comparable<Record>{
     public int findID(float value) {
        return key; 
     }
+    
     @Override
     public int compareTo(Record o) {
         // TODO Auto-generated method stub

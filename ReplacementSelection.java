@@ -25,11 +25,10 @@ public class ReplacementSelection {
             RandomAccessFile write = new RandomAccessFile(sorted, "rw");
 
             FileWriter write2 = new FileWriter("FileOutput.txt");
-            MinHeapTree<Record> heap = new MinHeapTree<Record>(16*1024);
+            MinHeapTree<Record> heap = new MinHeapTree<Record>();
             ArrayList<Integer> runSizes = new ArrayList<Integer>();
             int currRunSize = 0;
             fillHeap(heap, read);
-            //RandomAccessFile read2 = new RandomAccessFile(given, "r");
 
             int lineNum = 0;
             int check = (int)(read.length() / (1024 * 8));
@@ -70,15 +69,13 @@ public class ReplacementSelection {
                     }
                   
                     for (int i = 0; i < 1024; i++) {
-                       // write.write(outputBuffer[i].getValue());
+                        write.write(outputBuffer[i].getTotal());
                        String result = String.valueOf(outputBuffer[i].getKey() + "   "+ outputBuffer[i].getValue());
                        write2.write(result + "\n");
-                       //System.out.println(outputBuffer[i].getValue());
                     }
                     inputBuffer = makeInput(read);
                 }
             }
-            
             clearHeap(heap, runSizes, currRunSize, write, write2);
             read.close();
             write.close();
@@ -88,15 +85,6 @@ public class ReplacementSelection {
             return runSizes;
         }
         
-        /**
-         * Sends the contents of heap to outputs
-         * 
-         * @param heap to use
-         * @param runSizes to check
-         * @param currRunSize of continuing run
-         * @param write to file
-         * @throws IOException
-         */
         private static void clearHeap(MinHeapTree heap, 
             ArrayList<Integer> runSizes, 
             int currRunSize, 
@@ -128,13 +116,7 @@ public class ReplacementSelection {
             runSizes.add(Integer.valueOf(currRunSize));
         }
         
-        /**
-         * Makes an input buffer
-         * 
-         * @param read from file
-         * @return input buffer
-         * @throws IOException
-         */
+
         private static Record[] makeInput(
             RandomAccessFile read) throws IOException {
             Record[] input = new Record[1024];
@@ -147,20 +129,12 @@ public class ReplacementSelection {
                 }
             }
             else {
-                //System.out.println("numPut is: " + numPut);
                 return null;
             }
             return input;
         }
         
-        /**
-         * Reads next record from file
-         * 
-         * @param bArray to be read
-         * @param offset to start
-         * @return next record
-         * @throws IOException
-         */
+
         private static Record nextRecord(byte[] bArray, 
             int offset) throws IOException {
             byte[] arr = new byte[8];
@@ -170,13 +144,6 @@ public class ReplacementSelection {
             return new Record(arr);
         }
         
-        /**
-         * Fills the heap with 16 blocks of data
-         * 
-         * @param heap to fill
-         * @param read from file
-         * @throws IOException
-         */
         private static void fillHeap(MinHeapTree<Record> heap, 
             RandomAccessFile read) throws IOException {
             int max;

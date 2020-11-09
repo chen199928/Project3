@@ -5,27 +5,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
-/**
- * @author Wyatt Muller (wtmuller22@vt.edu), Caroline Turner (ct21@vt.edu)
- * @version 2020.04.18
- * 
- * Performs a merge sort.
- */
+
 public class MergeSort {
 
-    /**
-     * Static method for multiway merge sort
-     * 
-     * @param readFrom file
-     * @param writeTo file
-     * @param runSizes list
-     * @return the file with the results
-     * @throws IOException
-     */
     public static File multiwayMerge(File readFrom, 
         File writeTo, 
         ArrayList<Integer> runSizes) throws IOException {
-        MinHeapTree<Record> heap = new MinHeapTree<Record>(16*1024);
+        MinHeapTree<Record> heap = new MinHeapTree<Record>();
         int currRunSize = 0;
         int numRunsCompleted = 0;
         RandomAccessFile read = new RandomAccessFile(readFrom, "r");
@@ -36,7 +22,7 @@ public class MergeSort {
         for (int i = 0; i < runSizes.size(); i++) {
             offsets[i] = counter;
             counter += runSizes.get(i);
-            //System.out.println("runsize: " + runSizes.get(i));
+            System.out.println("runsize: " + counter);
         }
         ArrayList<Integer> newRuns = new ArrayList<Integer>();
         while (numRunsCompleted < runSizes.size()) {
@@ -75,6 +61,7 @@ public class MergeSort {
                 byte[] bArray = new byte[numInBlock * 8];
                 read.seek(theseOffsets[i] * 8);
                 read.read(bArray);
+                System.out.println("numInBlock: " + numInBlock);
                 for (int j = 0; j < numInBlock; j++) {
                     byte[] arr = new byte[8];
                     for (int k = 0; k < 8; k++) {
@@ -99,7 +86,6 @@ public class MergeSort {
                 outputBuffer[idx] = min;
                 
                 if (idx == 1023) {
-                    System.out.println("here" + Integer.toString(z++));
                     idx = 0;
                     for (int i = 0; i < 1024; i++) {
                         write.write(outputBuffer[i].getTotal());
@@ -135,7 +121,7 @@ public class MergeSort {
                             arr[k] = bArray[(j * 8) + k];
                         }
                         thisRun[j] = new Record(arr, thisMinRun);
-                        System.out.println(thisRun[j].getValue());
+                        //System.out.println(thisRun[j].getValue());
                     }
                     for (int j = 0; j < numInBlock; j++) {
                         heap.insert(thisRun[j]);
