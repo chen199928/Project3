@@ -36,7 +36,7 @@ public class MergeSort {
         for (int i = 0; i < runSizes.size(); i++) {
             offsets[i] = counter;
             counter += runSizes.get(i);
-            //System.out.println("runsize: " + runSizes.get(i));
+            System.out.println("runsize: " + counter);
         }
         ArrayList<Integer> newRuns = new ArrayList<Integer>();
         while (numRunsCompleted < runSizes.size()) {
@@ -75,6 +75,7 @@ public class MergeSort {
                 byte[] bArray = new byte[numInBlock * 8];
                 read.seek(theseOffsets[i] * 8);
                 read.read(bArray);
+                System.out.println("numInBlock: " + numInBlock);
                 for (int j = 0; j < numInBlock; j++) {
                     byte[] arr = new byte[8];
                     for (int k = 0; k < 8; k++) {
@@ -99,7 +100,6 @@ public class MergeSort {
                 outputBuffer[idx] = min;
                 
                 if (idx == 1023) {
-                    System.out.println("here" + Integer.toString(z++));
                     idx = 0;
                     for (int i = 0; i < 1024; i++) {
                         write.write(outputBuffer[i].getTotal());
@@ -135,7 +135,7 @@ public class MergeSort {
                             arr[k] = bArray[(j * 8) + k];
                         }
                         thisRun[j] = new Record(arr, thisMinRun);
-                        System.out.println(thisRun[j].getValue());
+                        //System.out.println(thisRun[j].getValue());
                     }
                     for (int j = 0; j < numInBlock; j++) {
                         heap.insert(thisRun[j]);

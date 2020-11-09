@@ -47,7 +47,7 @@ public class Externalsorting {
         RandomAccessFile rfile = new RandomAccessFile(inputFile, "r");
         System.out.println("rfile: " + rfile.length());
         File outputFile = new File(args[1]);
-        //RandomAccessFile output = new RandomAccessFile(args[1], "w");
+        System.out.println(rfile.length());
         FileWriter myWriter = new FileWriter(outputFile);
         ArrayList<Record> list = new ArrayList<Record>();
         Record record;
@@ -77,6 +77,7 @@ public class Externalsorting {
         System.out.println(out.length());
         ArrayList<Integer> runLengths = 
             ReplacementSelection.replacementSelectionSort(inputFile, outputFile);
+        System.out.println("output: " + outputFile.length());
         File result = MergeSort.multiwayMerge(outputFile, out, runLengths);
         resultsPrint(result);
          

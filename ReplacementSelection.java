@@ -70,8 +70,9 @@ public class ReplacementSelection {
                     }
                   
                     for (int i = 0; i < 1024; i++) {
-                       // write.write(outputBuffer[i].getValue());
+                        write.write(outputBuffer[i].getTotal());
                        String result = String.valueOf(outputBuffer[i].getKey() + "   "+ outputBuffer[i].getValue());
+                       //write.write(outputBuffer[i].getValue());
                        write2.write(result + "\n");
                        //System.out.println(outputBuffer[i].getValue());
                     }
