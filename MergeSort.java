@@ -1,4 +1,3 @@
-package Project3;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -8,149 +7,148 @@ import java.util.ArrayList;
 
 public class MergeSort {
 
-    public static File multiwayMerge(File readFrom, 
-        File writeTo, 
-        ArrayList<Integer> runSizes) throws IOException {
+    public static File multiwayMerge(File inputFile, 
+        File outputFile, 
+        ArrayList<Integer> list) throws IOException {
         MinHeapTree<Record> heap = new MinHeapTree<Record>();
-        int currRunSize = 0;
-        int numRunsCompleted = 0;
-        RandomAccessFile read = new RandomAccessFile(readFrom, "r");
-        RandomAccessFile write = new RandomAccessFile(writeTo, "rw");
-        FileWriter write2 = new FileWriter("a.txt");
-        int[] offsets = new int[runSizes.size()];
-        int counter = 0;
-        for (int i = 0; i < runSizes.size(); i++) {
-            offsets[i] = counter;
-            counter += runSizes.get(i);
-            System.out.println("runsize: " + counter);
-        }
-        ArrayList<Integer> newRuns = new ArrayList<Integer>();
-        while (numRunsCompleted < runSizes.size()) {
-            int thisNumRuns;
-            if(numRunsCompleted + 4 <= runSizes.size()) {
-                 thisNumRuns = 4;
+        int current = 0;
+        int completedRun = 0;
+        RandomAccessFile read = new RandomAccessFile(inputFile, "r");
+        RandomAccessFile write = new RandomAccessFile(outputFile, "rw");
+        ArrayList<Integer> refresh = new ArrayList<Integer>();
+        int maxRun = list.size();
+        int[] offsets = new int[maxRun];
+        addOffsets(offsets, maxRun, list);
+       
+        while (completedRun < maxRun) {
+            int numRuns =  getNumRuns(completedRun,maxRun);
+            int[] heapVolume = new int[numRuns];
+            int[] bufferVolume = new int[numRuns];
+            int[] newOffsets = new int[numRuns];
+            int[] runVolume = new int[numRuns];
+            for (int i = 0; i < numRuns; i++) {
+                newOffsets[i] = offsets[completedRun + i];
             }
-            else {
-                 thisNumRuns = runSizes.size() % 4;
-            }
+            current = 0;
 
-            int[] numInHeap = new int[thisNumRuns];
-            int[] numInOut = new int[thisNumRuns];
-            int[] theseOffsets = new int[thisNumRuns];
-            int[] numInRuns = new int[thisNumRuns];
-            for (int i = 0; i < thisNumRuns; i++) {
-                theseOffsets[i] = offsets[numRunsCompleted + i];
-                numInHeap[i] = 0;
-                numInOut[i] = 0;
-                numInRuns[i] = 0;
-            }
-            currRunSize = 0;
-            System.out.println("thisNumRuns: " + thisNumRuns);
-            for (int i = 0; i < thisNumRuns; i++) {
-                int numInBlock;
-                int numInRun = runSizes.get(numRunsCompleted + i).intValue();
-                numInRuns[i] = numInRun;
-                if(numInRun >= 1024) {
-                    numInBlock = 1024;
-                }
-                else {
-                    numInBlock = numInRun;
-                }
-                Record[] thisRun = new Record[numInBlock];
+            for (int i = 0; i < numRuns; i++) {
+
+               
+                runVolume[i] = list.get(completedRun + i);
+                int blockVolume = limitUpperBound(runVolume[i]);
+                Record[] run = new Record[blockVolume];
                 //System.out.println("numInBlock:  " + numInBlock);
-                byte[] bArray = new byte[numInBlock * 8];
-                read.seek(theseOffsets[i] * 8);
-                read.read(bArray);
-                System.out.println("numInBlock: " + numInBlock);
-                for (int j = 0; j < numInBlock; j++) {
+                byte[] byteArray = new byte[blockVolume * 8];
+                read.seek(newOffsets[i] * 8);
+                read.read(byteArray);
+
+                for (int j = 0; j < blockVolume; j++) {
                     byte[] arr = new byte[8];
                     for (int k = 0; k < 8; k++) {
-                        arr[k] = bArray[(j * 8) + k];
+                        arr[k] = byteArray[(j * 8) + k];
                     }
-                    thisRun[j] = new Record(arr, i);
-                    //System.out.println("run: " + thisRun[j].getValue());
+                    run[j] = new Record(arr, i);
+                    heap.insert(run[j]);
                 }
-                for (int j = 0; j < numInBlock; j++) {
-                    heap.insert(thisRun[j]);
-                }
-                numInHeap[i] = numInBlock;
-                currRunSize += numInRun;
+                heapVolume[i] = blockVolume;
+                current += runVolume[i];
             }
-            newRuns.add(Integer.valueOf(currRunSize));
+            refresh.add(current);
             Record[] outputBuffer = new Record[1024];
-            int idx = 0;
-            int z = 0;
+            int position = 0;
             while (heap.heapsize() > 0) {
-                Record min = heap.getMin();
+                Record record = heap.getMin();
                 heap.removeMin();
-                outputBuffer[idx] = min;
+                outputBuffer[position] = record;
                 
-                if (idx == 1023) {
-                    idx = 0;
+                if (position == 1023) {
+                    position = 0;
                     for (int i = 0; i < 1024; i++) {
-                        write.write(outputBuffer[i].getRecord());
-                        write2.write( String.valueOf(outputBuffer[i].getValue()) + "\n");
-                        //System.out.println(outputBuffer[i].getValue());
-                       
+                        write.write(outputBuffer[i].getRecord());                      
                     }
                 }
                 else {
-                    idx++;
+                    position++;
                 }
-                int thisMinRun = min.getRun();
-                int numInBlock;
-                numInHeap[thisMinRun] -= 1;
-                numInOut[thisMinRun] += 1;
-                if (numInHeap[thisMinRun] == 0 
-                    && numInOut[thisMinRun] < numInRuns[thisMinRun]) {
-                    if(numInRuns[thisMinRun] 
-                        - numInOut[thisMinRun] >= 1024) {
-                        numInBlock = 1024;
+                int recordRun = record.getRun();
+                int blockVolume;
+                heapVolume[recordRun] -= 1;
+                bufferVolume[recordRun] += 1;
+                if (heapVolume[recordRun] == 0 
+                    && bufferVolume[recordRun] < runVolume[recordRun]) {
+                    if(runVolume[recordRun] 
+                        - bufferVolume[recordRun] >= 1024) {
+                        blockVolume = 1024;
                     } else {
-                        numInBlock = numInRuns[thisMinRun] - numInOut[thisMinRun];
+                        blockVolume = runVolume[recordRun] - bufferVolume[recordRun];
                     }
-                    Record[] thisRun = new Record[numInBlock];
-                    byte[] bArray = new byte[numInBlock * 8];
+                    Record[] run = new Record[blockVolume];
+                    byte[] byteArray = new byte[blockVolume * 8];
                     read.seek(
-                        (theseOffsets[thisMinRun] 
-                            + numInOut[thisMinRun]) * 8);
-                    read.read(bArray);
-                    for (int j = 0; j < numInBlock; j++) {
+                        (newOffsets[recordRun] 
+                            + bufferVolume[recordRun]) * 8);
+                    read.read(byteArray);
+
+                    for (int j = 0; j < blockVolume; j++) {
                         byte[] arr = new byte[8];
                         for (int k = 0; k < 8; k++) {
-                            arr[k] = bArray[(j * 8) + k];
+                            arr[k] = byteArray[(j * 8) + k];
                         }
-                        thisRun[j] = new Record(arr, thisMinRun);
-                        //System.out.println(thisRun[j].getValue());
+                        run[j] = new Record(arr, recordRun);
+                        heap.insert(run[j]);
                     }
-                    for (int j = 0; j < numInBlock; j++) {
-                        heap.insert(thisRun[j]);
-                    }
-                    numInHeap[thisMinRun] = numInBlock;
+                    heapVolume[recordRun] = blockVolume;
                 }
             }
-            if (idx != 0) {
-                System.out.println("maybe?");
-                for (int i = 0; i < idx; i++) {
-                    write.write(outputBuffer[i].getRecord());
-                    //System.out.println("idx: " + outputBuffer[i].getValue());
-                    
+            if (position != 0) {
+                for (int i = 0; i < position; i++) {
+                    write.write(outputBuffer[i].getRecord());  
                 }
             }
-            numRunsCompleted += thisNumRuns;
+            completedRun += numRuns;
         }
-        runSizes = newRuns;
+        list = refresh;
         read.close();
         write.close();
-        readFrom.delete();
+        inputFile.delete();
   
-        if (runSizes.size() > 1) {
-            //System.out.println("runSize: " + runSizes.size());
-            return multiwayMerge(writeTo, readFrom, runSizes);
+        if (list.size() > 1) {
+            return multiwayMerge(outputFile, inputFile, list);
         }
         else {
-            return writeTo;
+            return outputFile;
         }
+    }
+    
+    public static void addOffsets(int[] offsets, int maxRun, ArrayList<Integer> runSizes) {
+        int count = 0;
+        for (int i = 0; i < maxRun; i++) {
+            offsets[i] = count;
+            count += runSizes.get(i);
+        }
+    }
+
+    
+    public static int getNumRuns(int numRunsCompleted, int maxRun) {
+        int result;
+        if(numRunsCompleted + 4 <= maxRun) {
+            result = 4;
+       }
+       else {
+            result = maxRun % 4;
+       }
+       return result;
+    }
+    
+    public static int limitUpperBound(int numInRun) {
+        int result;
+        if(numInRun >= 1024) {
+            result = 1024;
+        }
+        else {
+            result = numInRun;
+        }
+        return result;
     }
     
 }
