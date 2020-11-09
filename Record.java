@@ -5,18 +5,18 @@ import java.nio.ByteBuffer;
 public class Record implements Comparable<Record>{
     int key;
     float value;
-    byte[] k;
+    byte[] byteArray;
     int runNum;
 
     public Record() {
         key = 0;
         value = 0;
-        k = null;
+        byteArray = null;
     }
     
     
     public Record(byte[] record) {
-        k = record;
+        byteArray = record;
         ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.put(record);
         buffer.flip();
@@ -27,7 +27,7 @@ public class Record implements Comparable<Record>{
     
     
     public Record(byte[] record, int num) {
-        k = record;
+        byteArray = record;
         ByteBuffer buffer = ByteBuffer.allocate(8);
         buffer.put(record);
         buffer.flip();
@@ -36,7 +36,7 @@ public class Record implements Comparable<Record>{
         runNum = num;
     }
     
-    public int getRunNum() {
+    public int getRun() {
         return runNum;
     }
     public int getKey() {
@@ -51,6 +51,9 @@ public class Record implements Comparable<Record>{
        return key; 
     }
     
+    public byte[] getRecord() {
+        return byteArray;
+    }
     @Override
     public int compareTo(Record o) {
         // TODO Auto-generated method stub
@@ -65,10 +68,7 @@ public class Record implements Comparable<Record>{
         }
     }
     
-    public byte[] getTotal() {
-        return k;
-    }
-    
+
     public String toString() {
         return this.getKey() + "     " + this.getValue();
     }

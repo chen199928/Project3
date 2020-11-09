@@ -134,8 +134,8 @@ public class MinHeapTree<Record extends Comparable<Record>> {
     }
 
 
-    public void setMin(Record newMin) {
-        heap[0] = newMin;
+    public void setMin(Record min) {
+        heap[0] = min;
     }
 
 
@@ -146,7 +146,7 @@ public class MinHeapTree<Record extends Comparable<Record>> {
     }
 
 
-    public void setHidden(int numHidden) {
+    public void setHide(int numHidden) {
         for (int i = 0; i < numHidden; i++) {
             insert(heap[(size - numHidden) + i]);
         }

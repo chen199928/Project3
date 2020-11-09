@@ -88,7 +88,7 @@ public class MergeSort {
                 if (idx == 1023) {
                     idx = 0;
                     for (int i = 0; i < 1024; i++) {
-                        write.write(outputBuffer[i].getTotal());
+                        write.write(outputBuffer[i].getRecord());
                         write2.write( String.valueOf(outputBuffer[i].getValue()) + "\n");
                         //System.out.println(outputBuffer[i].getValue());
                        
@@ -97,7 +97,7 @@ public class MergeSort {
                 else {
                     idx++;
                 }
-                int thisMinRun = min.getRunNum();
+                int thisMinRun = min.getRun();
                 int numInBlock;
                 numInHeap[thisMinRun] -= 1;
                 numInOut[thisMinRun] += 1;
@@ -132,7 +132,7 @@ public class MergeSort {
             if (idx != 0) {
                 System.out.println("maybe?");
                 for (int i = 0; i < idx; i++) {
-                    write.write(outputBuffer[i].getTotal());
+                    write.write(outputBuffer[i].getRecord());
                     //System.out.println("idx: " + outputBuffer[i].getValue());
                     
                 }
