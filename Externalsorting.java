@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Array;
@@ -23,9 +24,8 @@ import java.io.IOException;
 
 public class Externalsorting {
 
-
     public static void main(String[] args) throws IOException {
-
+        FileWriter test = new FileWriter("test128.txt");
         File inputFile = new File(args[0]);
         File outputFile = new File("temp.txt");
         FileWriter myWriter = new FileWriter(outputFile);
@@ -34,13 +34,36 @@ public class Externalsorting {
         int numBlocks = ((int)read.length()) / 8 / 1024;
         int numRun = ((int)read.length()) / 8 % 1024;
         RandomAccessFile write = new RandomAccessFile(outputFile, "rw");
-        ArrayList<Integer> run = ReplacementSelection
-            .replacementSelectionSort(read, write);
+        int countComma = 0;
+        ArrayList<Integer> run = ReplacementSelection.replacementSelectionSort(
+            read, write);
+
         // return a temp file
         File result = MergeSort.multiwayMerge(outputFile, out, run);
+        String count;
+
         RandomAccessFile newBin = new RandomAccessFile(result, "r");
+        int pointer = 0;
+        while (pointer <= newBin.length() - 1) {
+            byte[] intarray = new byte[4];
+            byte[] floatarray = new byte[4];
+            newBin.seek(pointer);
+            newBin.read(intarray);
+            // System.out.print(); // System.out.print();
+            // break; // break;
+            pointer = pointer + 4;
+            newBin.seek(pointer);
+            newBin.read(floatarray);
+            pointer = pointer + 4;
+            test.write(String.valueOf(convertByteArrayToInteger(intarray)));
+            test.write(String.valueOf(convertByteArrayToFloat(floatarray)));
+            test.write("\n");
+
+        }
+
         if (numRun != 0) {
             numBlocks++;
+
         }
         for (int i = 0; i < numBlocks; i++) {
             int byte1 = i * 8192;
@@ -53,12 +76,15 @@ public class Externalsorting {
                     System.out.print("\n");
                 }
                 else {
-                    System.out.print(", ");
+                    if (i != numBlocks - 1) {
+                        System.out.print(", ");
+                    }
                 }
             }
         }
+
         newBin.close();
-        out.delete();
+        // out.delete();
         myWriter.close();
 
     }
@@ -71,6 +97,22 @@ public class Externalsorting {
             return new Record(arr);
         }
         return null;
+    }
+
+
+    public static int convertByteArrayToInteger(byte[] intBytes) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(Integer.BYTES);
+        byteBuffer.put(intBytes);
+        byteBuffer.flip();
+        return byteBuffer.getInt();
+    }
+
+
+    public static float convertByteArrayToFloat(byte[] floatBytes) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(Float.BYTES);
+        byteBuffer.put(floatBytes);
+        byteBuffer.flip();
+        return byteBuffer.getFloat();
     }
 
 }

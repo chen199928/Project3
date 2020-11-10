@@ -1,3 +1,4 @@
+package Project3;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,6 +14,7 @@ public class MergeSort {
         MinHeapTree<Record> heap = new MinHeapTree<Record>();
         int current = 0;
         int completedRun = 0;
+
         RandomAccessFile read = new RandomAccessFile(inputFile, "r");
         RandomAccessFile write = new RandomAccessFile(outputFile, "rw");
         ArrayList<Integer> refresh = new ArrayList<Integer>();
@@ -110,7 +112,7 @@ public class MergeSort {
         list = refresh;
         read.close();
         write.close();
-        inputFile.delete();
+        //inputFile.delete();
   
         if (list.size() > 1) {
             return multiwayMerge(outputFile, inputFile, list);

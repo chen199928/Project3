@@ -76,6 +76,13 @@ public class MinHeapTree<Record extends Comparable<Record>> {
     }
 
 
+    public void swap(int pos1, int pos2) {
+        Record temp = heap[pos1];
+        heap[pos1] = heap[pos2];
+        heap[pos2] = temp;
+    }
+
+
     public void insert(Record key) {
         if (n >= size) {
             return;
@@ -136,13 +143,6 @@ public class MinHeapTree<Record extends Comparable<Record>> {
 
     public void setMin(Record min) {
         heap[0] = min;
-    }
-
-
-    public void swap(int pos1, int pos2) {
-        Record temp = heap[pos1];
-        heap[pos1] = heap[pos2];
-        heap[pos2] = temp;
     }
 
 
