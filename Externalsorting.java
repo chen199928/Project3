@@ -25,7 +25,7 @@ import java.io.IOException;
 public class Externalsorting {
 
     public static void main(String[] args) throws IOException {
-        FileWriter test = new FileWriter("test128.txt");
+        //FileWriter test = new FileWriter("test128.txt");
         File inputFile = new File(args[0]);
         File outputFile = new File("temp.txt");
         FileWriter myWriter = new FileWriter(outputFile);
@@ -44,26 +44,25 @@ public class Externalsorting {
 
         RandomAccessFile newBin = new RandomAccessFile(result, "r");
         int pointer = 0;
-        while (pointer <= newBin.length() - 1) {
-            byte[] intarray = new byte[4];
-            byte[] floatarray = new byte[4];
-            newBin.seek(pointer);
-            newBin.read(intarray);
-            // System.out.print(); // System.out.print();
-            // break; // break;
-            pointer = pointer + 4;
-            newBin.seek(pointer);
-            newBin.read(floatarray);
-            pointer = pointer + 4;
-            test.write(String.valueOf(convertByteArrayToInteger(intarray)));
-            test.write(String.valueOf(convertByteArrayToFloat(floatarray)));
-            test.write("\n");
-
-        }
+//        while (pointer <= newBin.length() - 1) {
+//            byte[] intarray = new byte[4];
+//            byte[] floatarray = new byte[4];
+//            newBin.seek(pointer);
+//            newBin.read(intarray);
+//            // System.out.print(); // System.out.print();
+//            // break; // break;
+//            pointer = pointer + 4;
+//            newBin.seek(pointer);
+//            newBin.read(floatarray);
+//            pointer = pointer + 4;
+//            test.write(String.valueOf(convertByteArrayToInteger(intarray)));
+//            test.write(String.valueOf(convertByteArrayToFloat(floatarray)));
+//            test.write("\n");
+//
+//        }
 
         if (numRun != 0) {
             numBlocks++;
-
         }
         for (int i = 0; i < numBlocks; i++) {
             int byte1 = i * 8192;
