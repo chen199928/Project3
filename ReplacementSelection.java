@@ -1,11 +1,25 @@
-package Project3;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-
+/**
+ * 
+ * @author youwei(adam)chen and honghao zhang
+ * to process the records stored in the tree 
+ * and sort them in each run.
+ */
 public class ReplacementSelection {
+    /**
+     * to implement the replacement selection 
+     * sort.
+     * @param readFile input file
+     * @param writeFile output file 
+     * @return the list that each index stands for
+     * the number of records in each run.
+     * @throws IOException exception.
+     */
     static ArrayList<Integer> replacementSelectionSort(
         RandomAccessFile readFile,
         RandomAccessFile writeFile)
@@ -31,16 +45,6 @@ public class ReplacementSelection {
         }
         Record[] inputBuffer = nextInput(readFile);
         Record[] outputBuffer = new Record[1024];
-//        if (check <= 16) {
-//
-//            ArrayList<String> list = heap.print();
-//            for (int i = 0; i < list.size(); i++) {
-//                String result = list.get(i);
-//                write2.write(result + "\n");
-//                // write.write(outputBuffer[i].getTotal());
-//            }
-//
-//        }
 
         if(check > 16){
             while (inputBuffer != null) {
@@ -77,13 +81,21 @@ public class ReplacementSelection {
             clear(heap, run, currRun, writeFile, write2, check);
         }
         readFile.close();
-        // System.out.println(writeFile.length());
         writeFile.close();
         write2.close();
         return run;
     }
 
-
+    /**
+     * the clear method
+     * @param heap heap tree
+     * @param run the list that stores the # of run.
+     * @param currRun current run number
+     * @param writeFile output file
+     * @param w2 file writer
+     * @param check to make sure it is limited by 16.
+     * @throws IOException exception
+     */
     private static void clear(
         MinHeapTree<Record> heap,
         ArrayList<Integer> run,
@@ -130,7 +142,13 @@ public class ReplacementSelection {
         run.add(Integer.valueOf(currRun));
     }
 
-
+    /**
+     * to read the file and store the 
+     * record into the input buffer.
+     * @param readFile the file to read 
+     * @return inputBuffer array
+     * @throws IOException exception.
+     */
     private static Record[] nextInput(RandomAccessFile readFile)
         throws IOException {
         Record[] inputBuffer = new Record[1024];
@@ -150,6 +168,14 @@ public class ReplacementSelection {
     }
 
 
+    /**
+     * the way to extract each key and value from the 
+     * byte array and create Record class to store each record.
+     * @param array array
+     * @param offset offset
+     * @return the record array.
+     * @throws IOException exception.
+     */
     private static Record Record(byte[] array, int offset) throws IOException {
         byte[] arr = new byte[8];
         for (int i = 0; i < 8; i++) {

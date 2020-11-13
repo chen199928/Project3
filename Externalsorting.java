@@ -1,4 +1,4 @@
-package Project3;
+
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -21,9 +21,31 @@ import java.util.Random;
 import java.util.Scanner;
 import java.io.File;
 import java.io.IOException;
-
+/**
+ * On my honor: - I have not used source code obtained from another student, or
+ * any other unauthorized source, either modified or unmodified.
+ *
+ * - All source code and documentation used in my program is either my original
+ * work, or was derived by me from the source code published in the textbook for
+ * this course.
+ *
+ * - I have not discussed coding details about this project with anyone other
+ * than my partner (in the case of a joint submission), instructor, ACM/UPE
+ * tutors or the TAs assigned to this course. I understand that I may discuss
+ * the concepts of this program with other students, and that another student
+ * may help me debug my program so long as neither of us writes anything during
+ * the discussion or modifies any computer file during the discussion. I have
+ * violated neither the spirit nor letter of this restriction.
+ * @author youweichen and honghao zhang
+ * @version 11/13/2020
+ * this is the external sorting class.
+ */
 public class Externalsorting {
-
+/**
+ * main method that implements external sorting
+ * @param args argument 
+ * @throws IOException exception
+ */
     public static void main(String[] args) throws IOException {
         File inputFile = new File(args[0]);
         File random = new File(args[1]);
@@ -59,7 +81,6 @@ public class Externalsorting {
         while ((length = instream.read(buffer)) > 0){
             outstream.write(buffer, 0, length);
         }
-        String count;
         RandomAccessFile newBin = new RandomAccessFile(random, "r");
 
         if (numRun != 0) {
@@ -95,7 +116,13 @@ public class Externalsorting {
 
     }
 
-
+    /**
+     * to initialize Record class and store value 
+     * into the class.
+     * @param raf the file that reads from
+     * @return Record 
+     * @throws IOException exception
+     */
     private static Record Record(RandomAccessFile raf) throws IOException {
         byte[] arr = new byte[8];
         int numPut = raf.read(arr);
@@ -105,7 +132,11 @@ public class Externalsorting {
         return null;
     }
 
-
+    /**
+     * the method that converts the byte array to integer
+     * @param intBytes byte array
+     * @return integer
+     */
     public static int convertByteArrayToInteger(byte[] intBytes) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(Integer.BYTES);
         byteBuffer.put(intBytes);
@@ -113,7 +144,11 @@ public class Externalsorting {
         return byteBuffer.getInt();
     }
 
-
+    /**
+     * the method that converts byte array to float.
+     * @param floatBytes byte array/
+     * @return float number 
+     */
     public static float convertByteArrayToFloat(byte[] floatBytes) {
         ByteBuffer byteBuffer = ByteBuffer.allocate(Float.BYTES);
         byteBuffer.put(floatBytes);

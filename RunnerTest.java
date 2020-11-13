@@ -1,4 +1,4 @@
-package Project3;
+
 
 
 
@@ -148,6 +148,11 @@ public class RunnerTest extends TestCase {
         temp.delete();
         temp2.delete();
     }
+    
+    /**
+     * test main 4
+     * @throws IOException exception
+     */
     public void testMai4() throws IOException {
         String[] args = {"Sample32.bin", "128"};
         

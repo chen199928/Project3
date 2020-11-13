@@ -1,13 +1,27 @@
-package Project3;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 
-
+/**
+ * 
+ * @author youweichen and Honghao Zhang
+ * MergeSort is to overall sort the blocks on different
+ * runs in the file.
+ */
 public class MergeSort {
-
+    /**
+     * 
+     * @param inputFile input file 
+     * @param outputFile output file 
+     * @param list list contains the volume of each run
+     * @return sorted file
+     * @throws IOException Exception 
+     * multiwayMerge is to sort the sorted blocks on each run.
+     * multiwayMerge is to combine the number of runs to one sorted run.
+     */
     public static File multiwayMerge(File inputFile, 
         File outputFile, 
         ArrayList<Integer> list) throws IOException {
@@ -26,53 +40,27 @@ public class MergeSort {
             int numRuns =  getNumRuns(completedRun,maxRun);
             int[] heapVolume = new int[numRuns];
             int[] bufferVolume = new int[numRuns];
-            int[] newOffsets = new int[numRuns];
             int[] runVolume = new int[numRuns];
-            for (int i = 0; i < numRuns; i++) {
-                newOffsets[i] = offsets[completedRun + i];
-            }
             current = 0;
 
             for (int i = 0; i < numRuns; i++) {
-
-               
+              
                 runVolume[i] = list.get(completedRun + i);
                 int blockVolume = limitUpperBound(runVolume[i]);
-                Record[] run = new Record[blockVolume];
-                //System.out.println("numInBlock:  " + numInBlock);
-                byte[] byteArray = new byte[blockVolume * 8];
-                read.seek(newOffsets[i] * 8);
-                read.read(byteArray);
-
-                for (int j = 0; j < blockVolume; j++) {
-                    byte[] arr = new byte[8];
-                    for (int k = 0; k < 8; k++) {
-                        arr[k] = byteArray[(j * 8) + k];
-                    }
-                    run[j] = new Record(arr, i);
-                    heap.insert(run[j]);
-                }
+                ByteArray array = new ByteArray(blockVolume, read, offsets[completedRun + i], i, heap);
+                array.addToTree();
+                
                 heapVolume[i] = blockVolume;
                 current += runVolume[i];
             }
+            
             refresh.add(current);
-            Record[] outputBuffer = new Record[1024];
-            int position = 0;
+            Buffer buffer = new Buffer(write);
             while (heap.heapsize() > 0) {
                 Record record = heap.getMin();
-                heap.removeMin();
-                outputBuffer[position] = record;
-                
-                if (position == 1023) {
-                    position = 0;
-                    //only read binary
-                    for (int i = 0; i < 1024; i++) {
-                        write.write(outputBuffer[i].getRecord());                      
-                    }
-                }
-                else {
-                    position++;
-                }
+                heap.removeMin();            
+                buffer.insert(record);       
+
                 int recordRun = record.getRun();
                 int blockVolume;
                 heapVolume[recordRun] -= 1;
@@ -85,36 +73,21 @@ public class MergeSort {
                     } else {
                         blockVolume = runVolume[recordRun] - bufferVolume[recordRun];
                     }
-                    Record[] run = new Record[blockVolume];
-                    byte[] byteArray = new byte[blockVolume * 8];
-                    read.seek(
-                        (newOffsets[recordRun] 
-                            + bufferVolume[recordRun]) * 8);
-                    read.read(byteArray);
-
-                    for (int j = 0; j < blockVolume; j++) {
-                        byte[] arr = new byte[8];
-                        for (int k = 0; k < 8; k++) {
-                            arr[k] = byteArray[(j * 8) + k];
-                        }
-                        run[j] = new Record(arr, recordRun);
-                        heap.insert(run[j]);
-                    }
+                    int offsetsTotal = offsets[completedRun + recordRun] + bufferVolume[recordRun];
+                    ByteArray array = new ByteArray(blockVolume, read, offsetsTotal, recordRun, heap);
+                    array.addToTree();
+                    
                     heapVolume[recordRun] = blockVolume;
                 }
             }
-            if (position != 0) {
-                for (int i = 0; i < position; i++) {
-                    write.write(outputBuffer[i].getRecord());  
-                }
-            }
+
+            buffer.dumpToFile();
             completedRun += numRuns;
         }
         list = refresh;
         read.close();
         write.close();
-        //inputFile.delete();
-  
+
         if (list.size() > 1) {
             return multiwayMerge(outputFile, inputFile, list);
         }
@@ -123,15 +96,27 @@ public class MergeSort {
         }
     }
     
-    public static void addOffsets(int[] offsets, int maxRun, ArrayList<Integer> runSizes) {
+    /**
+     * to add the offsets
+     * @param offsets the number of records each run contains 
+     * @param maxRun the max number of run
+     * @param list the list that stores the number of records each run
+     * has.
+     */
+    public static void addOffsets(int[] offsets, int maxRun, ArrayList<Integer> list) {
         int count = 0;
         for (int i = 0; i < maxRun; i++) {
             offsets[i] = count;
-            count += runSizes.get(i);
+            count += list.get(i);
         }
     }
 
-    
+    /**
+     * to get the run
+     * @param numRunsCompleted completed run
+     * @param maxRun the max number of run
+     * @return the run
+     */
     public static int getNumRuns(int numRunsCompleted, int maxRun) {
         int result;
         if(numRunsCompleted + 4 <= maxRun) {
@@ -143,6 +128,12 @@ public class MergeSort {
        return result;
     }
     
+    /**
+     * to make sure it does not exceed the bound
+     * @param numInRun input number 
+     * @return output number that does not exceed
+     * the bound.
+     */
     public static int limitUpperBound(int numInRun) {
         int result;
         if(numInRun >= 1024) {
