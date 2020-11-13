@@ -65,6 +65,7 @@ public class MergeSort {
                 
                 if (position == 1023) {
                     position = 0;
+                    //only read binary
                     for (int i = 0; i < 1024; i++) {
                         write.write(outputBuffer[i].getRecord());                      
                     }

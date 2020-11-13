@@ -59,7 +59,7 @@ public class RunnerTest extends TestCase {
       
         file.flush();
         file.close();
-//        new Externalsorting();
+        new Externalsorting();
         String[] args2 = {"Sample32.bin", "file.bin"};
         Externalsorting.main(args2);
         String output = systemOut().getHistory();
@@ -76,14 +76,38 @@ public class RunnerTest extends TestCase {
      * @throws IOException
      *             throw
      */
-    public void testMain2() throws IOException {
-        args = new String[2];
-        args[0] = "Sampledata_16blocks.bin";
-        args[1] = "filenamess.bin";
+    public void testMai1() throws IOException {
+        String[] args = {"Sample32.bin", "16"};
+        
+        int val;
+        float val2;
+        assert (args.length == 2) :
+             "\nUsage: Genfile_proj3_2020 <filename> <size>" +
+         "\nOptions \nSize is measured in blocks of 8192 bytes";
+
+      int filesize = Integer.parseInt(args[1]); // Size of file in blocks
+      DataOutputStream file = new DataOutputStream(
+          new BufferedOutputStream(new FileOutputStream(args[0])));
+
+      for (int i=0; i<filesize; i++)
+          for (int j=0; j<1024; j++) {
+             val = (int)(value.nextInt(Integer.MAX_VALUE ));
+             file.writeInt(val);
+             val2 = (float)(value.nextFloat()*Float.MAX_VALUE);
+             file.writeFloat(val2);
+          }
+      
+        file.flush();
+        file.close();
         new Externalsorting();
-        Externalsorting.main(args);
+        String[] args2 = {"Sample32.bin", "file.bin"};
+        Externalsorting.main(args2);
         String output = systemOut().getHistory();
         assertNotNull(output);
+        File temp = new File("Sampel32.bin");
+        File temp2 = new File("file.bin");
+        temp.delete();
+        temp2.delete();
     }
     /**
      * test main 1
@@ -91,13 +115,70 @@ public class RunnerTest extends TestCase {
      * @throws IOException
      *             throw
      */
-    public void testMain3() throws IOException {
-        args = new String[2];
-        args[0] = "Sampledata_128blocks.bin";
-        args[1] = "filenamesss.bin";
+    public void testMai2() throws IOException {
+        String[] args = {"Sample32.bin", "32"};
+        
+        int val;
+        float val2;
+        assert (args.length == 2) :
+             "\nUsage: Genfile_proj3_2020 <filename> <size>" +
+         "\nOptions \nSize is measured in blocks of 8192 bytes";
+
+      int filesize = Integer.parseInt(args[1]); // Size of file in blocks
+      DataOutputStream file = new DataOutputStream(
+          new BufferedOutputStream(new FileOutputStream(args[0])));
+
+      for (int i=0; i<filesize; i++)
+          for (int j=0; j<1024; j++) {
+             val = (int)(value.nextInt(Integer.MAX_VALUE ));
+             file.writeInt(val);
+             val2 = (float)(value.nextFloat()*Float.MAX_VALUE);
+             file.writeFloat(val2);
+          }
+      
+        file.flush();
+        file.close();
         new Externalsorting();
-        Externalsorting.main(args);
+        String[] args2 = {"Sample32.bin", "file.bin"};
+        Externalsorting.main(args2);
         String output = systemOut().getHistory();
         assertNotNull(output);
+        File temp = new File("Sampel32.bin");
+        File temp2 = new File("file.bin");
+        temp.delete();
+        temp2.delete();
+    }
+    public void testMai4() throws IOException {
+        String[] args = {"Sample32.bin", "128"};
+        
+        int val;
+        float val2;
+        assert (args.length == 2) :
+             "\nUsage: Genfile_proj3_2020 <filename> <size>" +
+         "\nOptions \nSize is measured in blocks of 8192 bytes";
+
+      int filesize = Integer.parseInt(args[1]); // Size of file in blocks
+      DataOutputStream file = new DataOutputStream(
+          new BufferedOutputStream(new FileOutputStream(args[0])));
+
+      for (int i=0; i<filesize; i++)
+          for (int j=0; j<1024; j++) {
+             val = (int)(value.nextInt(Integer.MAX_VALUE ));
+             file.writeInt(val);
+             val2 = (float)(value.nextFloat()*Float.MAX_VALUE);
+             file.writeFloat(val2);
+          }
+      
+        file.flush();
+        file.close();
+        new Externalsorting();
+        String[] args2 = {"Sample32.bin", "file.bin"};
+        Externalsorting.main(args2);
+        String output = systemOut().getHistory();
+        assertNotNull(output);
+        File temp = new File("Sampel32.bin");
+        File temp2 = new File("file.bin");
+        temp.delete();
+        temp2.delete();
     }
 }

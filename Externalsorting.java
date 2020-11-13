@@ -25,11 +25,17 @@ import java.io.IOException;
 public class Externalsorting {
 
     public static void main(String[] args) throws IOException {
-        //FileWriter test = new FileWriter("test128.txt");
         File inputFile = new File(args[0]);
-        File outputFile = new File("temp.txt");
+        File random = new File(args[1]);
+        File outputFile = File.createTempFile("temp", ".bin");
+        //this get 32, 43, 512 1k correct
+        //File outputFile = new File("temp.txt");
+        //File result = new File(args[1]);
         FileWriter myWriter = new FileWriter(outputFile);
-        File out = new File(args[1]);
+        //this get 32, 43, 512 1k correct
+        
+        //File out = new File(args[1]);
+        File out = File.createTempFile("output", ".bin");
         RandomAccessFile read = new RandomAccessFile(inputFile, "r");
         int numBlocks = ((int)read.length()) / 8 / 1024;
         int numRun = ((int)read.length()) / 8 % 1024;
@@ -40,26 +46,21 @@ public class Externalsorting {
 
         // return a temp file
         File result = MergeSort.multiwayMerge(outputFile, out, run);
+        FileInputStream instream = new FileInputStream(result);
+        FileOutputStream outstream = new FileOutputStream(random);
+        
+        
+        byte[] buffer = new byte[1024];
+        
+        int length;
+        /*copying the contents from input stream to
+         * output stream using read and write methods
+         */
+        while ((length = instream.read(buffer)) > 0){
+            outstream.write(buffer, 0, length);
+        }
         String count;
-
-        RandomAccessFile newBin = new RandomAccessFile(result, "r");
-        int pointer = 0;
-//        while (pointer <= newBin.length() - 1) {
-//            byte[] intarray = new byte[4];
-//            byte[] floatarray = new byte[4];
-//            newBin.seek(pointer);
-//            newBin.read(intarray);
-//            // System.out.print(); // System.out.print();
-//            // break; // break;
-//            pointer = pointer + 4;
-//            newBin.seek(pointer);
-//            newBin.read(floatarray);
-//            pointer = pointer + 4;
-//            test.write(String.valueOf(convertByteArrayToInteger(intarray)));
-//            test.write(String.valueOf(convertByteArrayToFloat(floatarray)));
-//            test.write("\n");
-//
-//        }
+        RandomAccessFile newBin = new RandomAccessFile(random, "r");
 
         if (numRun != 0) {
             numBlocks++;
@@ -81,10 +82,16 @@ public class Externalsorting {
                 }
             }
         }
-
+        //result.renameTo(random);
         newBin.close();
-        // out.delete();
+
+        out.deleteOnExit();
+        //result.deleteOnExit();
+        outputFile.deleteOnExit();
+        result.delete();
         myWriter.close();
+        instream.close();
+        outstream.close();
 
     }
 
