@@ -1,4 +1,5 @@
-package Project3;
+
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -15,7 +16,9 @@ public class Buffer {
     private int order;
     private ArrayList<Record> list;
     private RandomAccessFile outputFile;
-
+    private int index;
+    
+    private ByteArrayOutputStream outputStream;
     /**
      * the buffer constructor.
      * 
@@ -25,8 +28,11 @@ public class Buffer {
      *             exception
      */
     public Buffer(RandomAccessFile outputFile) throws IOException {
+        bytes = new byte[1024*8];
         list = new ArrayList<Record>();
         this.outputFile = outputFile;
+        index = 0;
+        outputStream = new ByteArrayOutputStream();
     }
 
 
@@ -37,12 +43,9 @@ public class Buffer {
      *             exception
      */
     public void dumpToFile() throws IOException {
-        while (!this.isEmpty()) {
-            outputFile.write(list.get(0).getRecord());
-
-            list.remove(0);
-        }
-
+        byte result[] = outputStream.toByteArray( ); 
+        outputFile.write(result);
+        outputStream.reset();
     }
 
 
@@ -68,6 +71,7 @@ public class Buffer {
      */
     public void insert(Record record) throws IOException {
         list.add(record);
+        outputStream.write(record.getRecord());
         if (this.isFull()) {
             dumpToFile();
         }
