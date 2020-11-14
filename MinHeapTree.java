@@ -1,12 +1,17 @@
+package Project3;
 
 import java.util.ArrayList;
+
 /**
  * MinHeap tree that the root of the tree
  * has the smallest value. and the maximum size
  * of the tree is 16 blocks of records.
+ * 
  * @author youwei chen and honghao zhang
  *
- * @param <Record> record to store.
+ * @param <Record>
+ *            record to store.
+ * @version 11/13/2020
  */
 @SuppressWarnings("hiding")
 public class MinHeapTree<Record extends Comparable<Record>> {
@@ -26,43 +31,52 @@ public class MinHeapTree<Record extends Comparable<Record>> {
         n = 0;
     }
 
+
     /**
      * to get the record array
+     * 
      * @return the array
      */
     public Record[] getHeap() {
         return heap;
     }
 
+
     /**
-     * to print the value of record from 
+     * to print the value of record from
      * smallest to highest in the tree.
-     * @return list that each index stores the 
-     * value from smallest to largest.
+     * 
+     * @return list that each index stores the
+     *         value from smallest to largest.
      */
     public ArrayList<String> print() {
         ArrayList<String> result = new ArrayList<String>();
         if (heapsize() > 0) {
             result.add(this.getMin().toString());
-            while (removeMin() == false) {
+            while (!removeMin()) {
                 result.add(this.getMin().toString());
             }
         }
         return result;
     }
 
+
     /**
      * return the size of heap
+     * 
      * @return the size of heap.
      */
     public int heapsize() {
         return n;
     }
 
+
     /**
      * to set the heap size
-     * @param s the size that we
-     * want to set.
+     * 
+     * @param s
+     *            the size that we
+     *            want to set.
      */
     public void setHeapSize(int s) {
         n = s;
@@ -71,7 +85,9 @@ public class MinHeapTree<Record extends Comparable<Record>> {
 
     /**
      * to return if the position is leaf.
-     * @param pos position
+     * 
+     * @param pos
+     *            position
      * @return true or false.
      */
     boolean isLeaf(int pos) {
@@ -81,34 +97,39 @@ public class MinHeapTree<Record extends Comparable<Record>> {
 
     /**
      * to return the left-child position
-     * @param pos position
+     * 
+     * @param pos
+     *            position
      * @return the left-child position
      */
     int leftchild(int pos) {
         if (pos >= n / 2) {
             return -1;
         }
-        ;
         return 2 * pos + 1;
     }
 
 
     /**
      * Return position for right child of POS
-     * @param pos POS
+     * 
+     * @param pos
+     *            POS
      * @return integer position
      */
     int rightchild(int pos) {
         if (pos >= (n - 1) / 2) {
             return -1;
         }
-        ;
         return 2 * pos + 2;
     }
 
+
     /**
      * to return its parent position
-     * @param pos position 
+     * 
+     * @param pos
+     *            position
      * @return integer position.
      */
     public int parent(int pos) {
@@ -120,10 +141,13 @@ public class MinHeapTree<Record extends Comparable<Record>> {
 
 
     /**
-     * to swap the value in two 
+     * to swap the value in two
      * different positions
-     * @param pos1 position1
-     * @param pos2 position2
+     * 
+     * @param pos1
+     *            position1
+     * @param pos2
+     *            position2
      */
     public void swap(int pos1, int pos2) {
         Record temp = heap[pos1];
@@ -131,10 +155,13 @@ public class MinHeapTree<Record extends Comparable<Record>> {
         heap[pos2] = temp;
     }
 
+
     /**
-     * to insert the record into 
+     * to insert the record into
      * the tree.
-     * @param key key
+     * 
+     * @param key
+     *            key
      */
     public void insert(Record key) {
         if (n >= size) {
@@ -149,6 +176,7 @@ public class MinHeapTree<Record extends Comparable<Record>> {
         }
     }
 
+
     /**
      * to build the heap
      */
@@ -161,7 +189,9 @@ public class MinHeapTree<Record extends Comparable<Record>> {
 
     /**
      * to shift it down
-     * @param pos position
+     * 
+     * @param pos
+     *            position
      */
     public void siftdown(int pos) {
         if ((pos < 0) || (pos >= n)) {
@@ -180,8 +210,10 @@ public class MinHeapTree<Record extends Comparable<Record>> {
         }
     }
 
+
     /**
      * to remove the minimum value
+     * 
      * @return true or false.
      */
     public boolean removeMin() {
@@ -194,9 +226,11 @@ public class MinHeapTree<Record extends Comparable<Record>> {
         return (n == 0);
     }
 
+
     /**
      * the get the minimum value of the tree.
-     * @return record 
+     * 
+     * @return record
      */
     public Record getMin() {
         if (n == 0) {
@@ -205,17 +239,23 @@ public class MinHeapTree<Record extends Comparable<Record>> {
         return heap[0];
     }
 
+
     /**
      * to set the minimum value.
-     * @param min minimum value.
+     * 
+     * @param min
+     *            minimum value.
      */
     public void setMin(Record min) {
         heap[0] = min;
     }
 
+
     /**
      * to setHide.
-     * @param numHidden numHidden
+     * 
+     * @param numHidden
+     *            numHidden
      */
     public void setHide(int numHidden) {
         for (int i = 0; i < numHidden; i++) {

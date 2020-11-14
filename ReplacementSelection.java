@@ -1,31 +1,35 @@
+package Project3;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+
 /**
  * 
  * @author youwei(adam)chen and honghao zhang
- * to process the records stored in the tree 
- * and sort them in each run.
+ *         to process the records stored in the tree
+ *         and sort them in each run.
+ * @version 11/13/2020
  */
 public class ReplacementSelection {
     /**
-     * to implement the replacement selection 
+     * to implement the replacement selection
      * sort.
-     * @param readFile input file
-     * @param writeFile output file 
+     * 
+     * @param readFile
+     *            input file
+     * @param writeFile
+     *            output file
      * @return the list that each index stands for
-     * the number of records in each run.
-     * @throws IOException exception.
+     *         the number of records in each run.
+     * @throws IOException
+     *             exception.
      */
     static ArrayList<Integer> replacementSelectionSort(
         RandomAccessFile readFile,
         RandomAccessFile writeFile)
         throws IOException {
 
-        FileWriter write2 = new FileWriter("FileOutput.txt");
         MinHeapTree<Record> heap = new MinHeapTree<Record>();
         ArrayList<Integer> run = new ArrayList<Integer>();
         int currRun = 0;
@@ -46,7 +50,7 @@ public class ReplacementSelection {
         Record[] inputBuffer = nextInput(readFile);
         Record[] outputBuffer = new Record[1024];
 
-        if(check > 16){
+        if (check > 16) {
             while (inputBuffer != null) {
                 for (int i = 0; i < 1024; i++) {
                     Record output = heap.getMin();
@@ -69,39 +73,41 @@ public class ReplacementSelection {
                 }
                 for (int i = 0; i < 1024; i++) {
                     writeFile.write(outputBuffer[i].getRecord());
-                    String result = String.valueOf(outputBuffer[i].getKey()
-                        + "   " + outputBuffer[i].getValue());
-                    write2.write(result + "\n");
                 }
                 inputBuffer = nextInput(readFile);
             }
         }
         if (heap != null) {
 
-            clear(heap, run, currRun, writeFile, write2, check);
+            clear(heap, run, currRun, writeFile, check);
         }
         readFile.close();
         writeFile.close();
-        write2.close();
         return run;
     }
 
+
     /**
      * the clear method
-     * @param heap heap tree
-     * @param run the list that stores the # of run.
-     * @param currRun current run number
-     * @param writeFile output file
-     * @param w2 file writer
-     * @param check to make sure it is limited by 16.
-     * @throws IOException exception
+     * 
+     * @param heap
+     *            heap tree
+     * @param run
+     *            the list that stores the # of run.
+     * @param currRun
+     *            current run number
+     * @param writeFile
+     *            output file
+     * @param check
+     *            to make sure it is limited by 16.
+     * @throws IOException
+     *             exception
      */
     private static void clear(
         MinHeapTree<Record> heap,
         ArrayList<Integer> run,
         int currRun,
         RandomAccessFile writeFile,
-        FileWriter w2,
         int check)
         throws IOException {
         int hide = 1024 * 16 - heap.heapsize();
@@ -109,45 +115,45 @@ public class ReplacementSelection {
         int max;
         if (check <= 16) {
             max = check;
-       
         }
         else {
             max = 16;
         }
-            for (int j = 0; j < max; j++) {
-                Record[] outputBuffer = new Record[1024];
-                for (int i = 0; i < 1024; i++) {
-                    Record out = (Record)heap.getMin();
-                    if (out == null) {
-                        i--;
-                        run.add(Integer.valueOf(currRun));
-                        currRun = 0;
-                        heap.setHide(hide);
-                    }
-                    else {
-                        outputBuffer[i] = out;
-                        heap.removeMin();
-                        currRun++;
-                    }
+        for (int j = 0; j < max; j++) {
+            Record[] outputBuffer = new Record[1024];
+            for (int i = 0; i < 1024; i++) {
+                Record out = (Record)heap.getMin();
+                if (out == null) {
+                    i--;
+                    run.add(Integer.valueOf(currRun));
+                    currRun = 0;
+                    heap.setHide(hide);
                 }
-                for (int i = 0; i < 1024; i++) {
-                    Record read = outputBuffer[i];
-                    writeFile.write(read.getRecord());
-                    String result = String.valueOf(read.getKey() + "   " + read
-                        .getValue());
-                    w2.write(result + "\n");
+                else {
+                    outputBuffer[i] = out;
+                    heap.removeMin();
+                    currRun++;
                 }
             }
-        
+            for (int i = 0; i < 1024; i++) {
+                Record read = outputBuffer[i];
+                writeFile.write(read.getRecord());
+            }
+        }
+
         run.add(Integer.valueOf(currRun));
     }
 
+
     /**
-     * to read the file and store the 
+     * to read the file and store the
      * record into the input buffer.
-     * @param readFile the file to read 
+     * 
+     * @param readFile
+     *            the file to read
      * @return inputBuffer array
-     * @throws IOException exception.
+     * @throws IOException
+     *             exception.
      */
     private static Record[] nextInput(RandomAccessFile readFile)
         throws IOException {
@@ -159,7 +165,7 @@ public class ReplacementSelection {
         }
         else {
             for (int i = 0; i < 1024; i++) {
-                Record result = Record(byteArray, i * 8);
+                Record result = record(byteArray, i * 8);
                 inputBuffer[i] = result;
             }
             return inputBuffer;
@@ -169,14 +175,18 @@ public class ReplacementSelection {
 
 
     /**
-     * the way to extract each key and value from the 
+     * the way to extract each key and value from the
      * byte array and create Record class to store each record.
-     * @param array array
-     * @param offset offset
+     * 
+     * @param array
+     *            array
+     * @param offset
+     *            offset
      * @return the record array.
-     * @throws IOException exception.
+     * @throws IOException
+     *             exception.
      */
-    private static Record Record(byte[] array, int offset) throws IOException {
+    private static Record record(byte[] array, int offset) throws IOException {
         byte[] arr = new byte[8];
         for (int i = 0; i < 8; i++) {
             arr[i] = array[offset + i];
